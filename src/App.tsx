@@ -1,36 +1,53 @@
 import { AudienceToggle } from './components/AudienceToggle'
 import { Hero } from './components/Hero'
+import { LocaleToggle } from './components/LocaleToggle'
 import { SectionView } from './components/SectionView'
 import { Sources } from './components/Sources'
 import { Toc } from './components/Toc'
-import { sections } from './content/sections'
 import { AudienceProvider } from './state/AudienceProvider'
+import { useLocale } from './state/locale-context'
+import { LocaleProvider } from './state/LocaleProvider'
 
-export default function App() {
+function Page() {
+  const { content } = useLocale()
+
   return (
-    <AudienceProvider>
+    <>
       <a className="skip-link" href="#main">
-        본문으로 건너뛰기
+        {content.ui.skipToContent}
       </a>
       <div className="site-header">
         <a className="brand" href="#top">
           <span className="brand-mark" aria-hidden="true">
             T
           </span>
-          트랜스포머 쉽게 이해하기
+          {content.ui.brand}
         </a>
-        <AudienceToggle />
+        <div className="header-controls">
+          <LocaleToggle />
+          <AudienceToggle />
+        </div>
       </div>
       <div className="layout" id="top">
-        <Toc sections={sections} />
+        <Toc />
         <main id="main" className="content">
           <Hero />
-          {sections.map((section) => (
+          {content.sections.map((section) => (
             <SectionView key={section.id} section={section} />
           ))}
           <Sources />
         </main>
       </div>
-    </AudienceProvider>
+    </>
+  )
+}
+
+export default function App() {
+  return (
+    <LocaleProvider>
+      <AudienceProvider>
+        <Page />
+      </AudienceProvider>
+    </LocaleProvider>
   )
 }

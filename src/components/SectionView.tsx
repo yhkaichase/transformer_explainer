@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react'
 import type { InteractiveKind, Section } from '../content/types'
 import { useAudience } from '../state/audience-context'
+import { useLocale } from '../state/locale-context'
 import { Callout } from './Callout'
 import { TokenizerDemo } from './TokenizerDemo'
 
@@ -8,10 +9,9 @@ const INTERACTIVES: Record<InteractiveKind, ComponentType> = {
   tokenizer: TokenizerDemo,
 }
 
-export const ENGINEER_CALLOUT_TITLE = '엔지니어를 위한 더 깊은 설명'
-
 export function SectionView({ section }: { section: Section }) {
   const { audience } = useAudience()
+  const { content } = useLocale()
   const Interactive = section.interactive ? INTERACTIVES[section.interactive] : null
   const headingId = `${section.id}-title`
 
@@ -20,11 +20,11 @@ export function SectionView({ section }: { section: Section }) {
       <p className="section-number">{String(section.number).padStart(2, '0')}</p>
       <h2 id={headingId} className="section-title">
         {section.title}
-        {section.status === 'draft' && <span className="badge">초안</span>}
+        {section.status === 'draft' && <span className="badge">{content.ui.draftBadge}</span>}
       </h2>
       <p className="section-tagline">{section.tagline}</p>
 
-      <Callout kind="analogy" title="비유로 이해하기">
+      <Callout kind="analogy" title={content.ui.analogyTitle}>
         <p>{section.analogy}</p>
       </Callout>
 
@@ -35,7 +35,7 @@ export function SectionView({ section }: { section: Section }) {
       {Interactive && <Interactive />}
 
       {audience === 'engineer' && (
-        <Callout kind="engineer" title={ENGINEER_CALLOUT_TITLE}>
+        <Callout kind="engineer" title={content.ui.engineerTitle}>
           {section.engineer.map((paragraph, i) => (
             <p key={i}>{paragraph}</p>
           ))}

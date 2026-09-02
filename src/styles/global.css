@@ -157,6 +157,14 @@ textarea {
   text-decoration: none;
 }
 
+.header-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
 .brand-mark {
   display: inline-grid;
   place-items: center;
@@ -168,7 +176,7 @@ textarea {
   font-weight: 800;
 }
 
-.audience-toggle {
+.segmented {
   display: inline-flex;
   gap: 4px;
   margin: 0;
@@ -178,7 +186,7 @@ textarea {
   background: var(--bg);
 }
 
-.audience-option {
+.segmented-option {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
@@ -189,29 +197,29 @@ textarea {
   color: var(--text-muted);
 }
 
-.audience-option:has(input:focus-visible) {
+.segmented-option:has(input:focus-visible) {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
-.audience-option.is-active {
+.segmented-option.is-active {
   background: var(--accent);
   color: var(--accent-contrast);
 }
 
-.audience-option input {
+.segmented-option input {
   position: absolute;
   opacity: 0;
   width: 1px;
   height: 1px;
 }
 
-.audience-label {
+.segmented-label {
   font-weight: 700;
   font-size: 0.95rem;
 }
 
-.audience-hint {
+.segmented-hint {
   font-size: 0.72rem;
   opacity: 0.85;
 }
@@ -266,6 +274,8 @@ textarea {
 }
 
 .toc-number {
+  flex-shrink: 0;
+  white-space: nowrap;
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }

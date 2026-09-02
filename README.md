@@ -1,9 +1,12 @@
 # 트랜스포머 쉽게 이해하기
 
+_English: [README.en.md](README.en.md)_
+
 ChatGPT 같은 AI 의 핵심 구조인 **트랜스포머(Transformer)** 를 주니어 엔지니어와 임원 눈높이에서 설명하는 인터랙티브 웹 페이지입니다.
 
 - **임원용** 모드: 수식 없이 비유와 결과 중심으로 읽습니다.
 - **엔지니어용** 모드: 같은 페이지에서 수식과 구조 설명이 추가됩니다.
+- **한국어 / English**: 상단 토글로 바꾸거나, `?lang=en` 을 붙인 주소로 영어 버전을 바로 열 수 있습니다.
 
 참고 프로젝트 [Transformer Explainer](https://github.com/poloclub/transformer-explainer)(Georgia Tech Polo Club)가 브라우저에서 실제 GPT-2 를 실행하며 내부를 보여 준다면, 이 프로젝트는 그보다 한 단계 쉬운 설명을 목표로 합니다. 자세한 계획은 [docs/plan.md](docs/plan.md) 에 있습니다.
 
@@ -38,7 +41,7 @@ npx playwright install chromium
 ## 구조
 
 ```
-src/content/     본문 데이터 (섹션, 참고 자료)
+src/content/     본문 데이터. ko.ts / en.ts 에 언어별 본문·참고 자료·UI 문자열
 src/components/  화면 조각과 인터랙티브 데모
 src/lib/         softmax, 어텐션 등 순수 계산 함수 (테스트 포함)
 src/state/       설명 수준(임원용/엔지니어용) 상태
@@ -50,7 +53,7 @@ docs/plan.md     콘텐츠 계획과 열린 질문
 
 `main` 브랜치에 푸시하면 `.github/workflows/deploy.yml` 이 GitHub Pages 로 배포합니다.
 저장소 **Settings → Pages → Build and deployment → Source** 를 **GitHub Actions** 로 한 번 설정해야 합니다.
-배포 주소는 `https://<사용자>.github.io/transformer_explain/` 형태입니다.
+배포 주소는 `https://<사용자>.github.io/transformer_explain/` 형태이고, 영어 버전은 뒤에 `?lang=en` 을 붙입니다.
 
 ## 참고 자료
 

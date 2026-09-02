@@ -34,9 +34,31 @@ test('목차 링크로 섹션으로 이동하고 토크나이저 데모가 동�
   await expect(demo.getByText('토큰 3개')).toBeVisible()
 })
 
+test('영어 버전: ?lang=en 링크로 열리고 토글로 한국어로 돌아온다', async ({ page }) => {
+  await page.goto('/?lang=en')
+  await expect(page).toHaveTitle(/Transformers/)
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en')
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Transformers')
+  await expect(page.getByRole('radio', { name: /Executive/ })).toBeChecked()
+  await expect(page.getByRole('navigation', { name: 'Contents' })).toBeVisible()
+  await expect(page.getByTestId('tokenizer-demo').getByText('9 tokens')).toBeVisible()
+
+  await page.getByRole('radio', { name: 'English' }).check()
+  await page.getByRole('radio', { name: '한국어' }).check()
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('트랜스포머')
+  await expect(page).toHaveURL(/lang=ko/)
+  await expect(page.locator('html')).toHaveAttribute('lang', 'ko')
+
+  // 새로고침해도 언어가 유지된다 (URL 파라미터).
+  await page.reload()
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('트랜스포머')
+})
+
 test('화면 스크린샷을 남긴다', async ({ page }) => {
   await page.goto('/')
   await page.screenshot({ path: 'test-results/home-executive.png', fullPage: true })
   await page.getByRole('radio', { name: /엔지니어용/ }).check()
   await page.screenshot({ path: 'test-results/home-engineer.png', fullPage: true })
+  await page.getByRole('radio', { name: 'English' }).check()
+  await page.screenshot({ path: 'test-results/home-english.png', fullPage: true })
 })
