@@ -1,9 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import {
+  affine,
+  crossEntropy,
   dot,
+  feedForward,
+  gradientStep,
   layerNorm,
   matMul,
   positionalEncoding,
+  relu,
   sampleIndex,
   scaledDotProductAttention,
   softmax,
@@ -221,5 +226,65 @@ describe('sampleIndex', () => {
 
   it('빈 벡터는 오류', () => {
     expect(() => sampleIndex([], () => 0)).toThrow(RangeError)
+  })
+})
+
+describe('relu / affine / feedForward', () => {
+  it('relu 는 음수만 0 으로 만든다', () => {
+    expect(relu([-1, 0, 2.5])).toEqual([0, 0, 2.5])
+  })
+
+  it('affine 은 xW + b 를 계산한다', () => {
+    const w = [
+      [1, 2],
+      [3, 4],
+    ]
+    expect(affine([1, 1], w, [10, 20])).toEqual([14, 26])
+    expect(() => affine([1], w, [0, 0])).toThrow(RangeError)
+  })
+
+  it('feedForward 는 논문의 FFN(x) = max(0, xW₁ + b₁)W₂ + b₂ 를 계산한다', () => {
+    const w1 = [
+      [1, -1],
+      [0, 1],
+    ]
+    const b1 = [0, -0.5]
+    const w2 = [[1], [1]]
+    const b2 = [0.25]
+    // x = [1, 0]: xW₁ + b₁ = [1, -1.5] → ReLU → [1, 0] → ·W₂ + b₂ = 1.25
+    const result = feedForward([1, 0], w1, b1, w2, b2)
+    expect(result.preActivation).toEqual([1, -1.5])
+    expect(result.hidden).toEqual([1, 0])
+    expect(result.output[0]).toBeCloseTo(1.25, 10)
+  })
+})
+
+describe('crossEntropy / gradientStep', () => {
+  it('정답 확률이 1 이면 손실 0, 작을수록 손실이 커진다', () => {
+    expect(crossEntropy([1, 0], 0)).toBe(0)
+    expect(crossEntropy([0.5, 0.5], 0)).toBeCloseTo(Math.log(2), 10)
+    expect(crossEntropy([0.1, 0.9], 0)).toBeGreaterThan(crossEntropy([0.5, 0.5], 0))
+    expect(() => crossEntropy([0.5, 0.5], 2)).toThrow(RangeError)
+  })
+
+  it('한 걸음마다 정답 확률이 오르고 손실이 내려간다', () => {
+    let scores = [2, 1, 0]
+    const target = 2
+    let previous = crossEntropy(softmax(scores), target)
+    for (let step = 0; step < 5; step++) {
+      scores = gradientStep(scores, target, 0.5)
+      const loss = crossEntropy(softmax(scores), target)
+      expect(loss).toBeLessThan(previous)
+      previous = loss
+    }
+    expect(softmax(scores)[target]).toBeGreaterThan(softmax([2, 1, 0])[target])
+  })
+
+  it('기울기는 softmax - onehot 이다', () => {
+    const scores = [0, 0]
+    // p = [0.5, 0.5], 정답 0 → 기울기 [-0.5, 0.5], lr 1 → [0.5, -0.5]
+    expect(gradientStep(scores, 0, 1)).toEqual([0.5, -0.5])
+    expect(() => gradientStep(scores, 0, 0)).toThrow(RangeError)
+    expect(() => gradientStep(scores, 5, 1)).toThrow(RangeError)
   })
 })

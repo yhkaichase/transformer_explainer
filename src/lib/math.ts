@@ -134,3 +134,71 @@ export function sampleIndex(probabilities: Vector, random: () => number = Math.r
   // 부동소수점 오차로 합이 1 에 조금 못 미칠 때는 마지막 항목을 돌려준다.
   return probabilities.length - 1
 }
+
+/** ReLU: 음수를 0 으로 자른다. */
+export function relu(x: Vector): Vector {
+  return x.map((value) => Math.max(0, value))
+}
+
+/** 벡터 x 에 행렬 w 를 곱하고 편향 b 를 더한다: xW + b. */
+export function affine(x: Vector, w: Matrix, b: Vector): Vector {
+  if (w.length !== x.length) {
+    throw new RangeError(`입력 길이 ${x.length} 와 행렬의 행 수 ${w.length} 가 다릅니다.`)
+  }
+  const result = matMul([x], w)[0]
+  assertSameLength(result, b)
+  return result.map((value, i) => value + b[i])
+}
+
+export interface FeedForwardResult {
+  /** 첫 선형 변환 결과 xW₁ + b₁ (ReLU 적용 전) */
+  preActivation: Vector
+  /** ReLU 적용 후의 숨은 층 */
+  hidden: Vector
+  /** 두 번째 선형 변환 결과 */
+  output: Vector
+}
+
+/**
+ * 원 논문 3.3절의 위치별 피드포워드 네트워크.
+ *   FFN(x) = max(0, xW₁ + b₁)W₂ + b₂
+ */
+export function feedForward(
+  x: Vector,
+  w1: Matrix,
+  b1: Vector,
+  w2: Matrix,
+  b2: Vector,
+): FeedForwardResult {
+  const preActivation = affine(x, w1, b1)
+  const hidden = relu(preActivation)
+  const output = affine(hidden, w2, b2)
+  return { preActivation, hidden, output }
+}
+
+/** 교차 엔트로피 손실: 정답 항목 확률의 -ln. 정답 확률이 1 이면 0, 작을수록 커진다. */
+export function crossEntropy(probabilities: Vector, targetIndex: number): number {
+  if (targetIndex < 0 || targetIndex >= probabilities.length) {
+    throw new RangeError('정답 인덱스가 범위를 벗어났습니다.')
+  }
+  // 0 - ln(1) 로 써서 -0 이 아니라 +0 을 돌려준다.
+  return 0 - Math.log(probabilities[targetIndex])
+}
+
+/**
+ * softmax + 교차 엔트로피 손실을 점수(로짓)에 대해 경사하강 한 걸음 내려간다.
+ * 손실의 점수에 대한 기울기는 (softmax(scores) - onehot(target)) 이다.
+ */
+export function gradientStep(scores: Vector, targetIndex: number, learningRate: number): Vector {
+  if (!(learningRate > 0)) {
+    throw new RangeError('learningRate 는 0 보다 커야 합니다.')
+  }
+  const probabilities = softmax(scores)
+  if (targetIndex < 0 || targetIndex >= scores.length) {
+    throw new RangeError('정답 인덱스가 범위를 벗어났습니다.')
+  }
+  return scores.map((score, i) => {
+    const gradient = probabilities[i] - (i === targetIndex ? 1 : 0)
+    return score - learningRate * gradient
+  })
+}

@@ -5,7 +5,8 @@ export type Audience = 'executive' | 'engineer'
 export type Locale = 'ko' | 'en'
 
 /** 섹션 안에 끼워 넣는 인터랙티브 데모의 종류. */
-export type InteractiveKind = 'tokenizer' | 'flow' | 'temperature' | 'positional'
+export type InteractiveKind =
+  'tokenizer' | 'flow' | 'temperature' | 'positional' | 'attention' | 'ffn' | 'stack' | 'training'
 
 /** 섹션 식별자. URL 해시와 DOM id 로 쓰인다. 순서는 structure.ts 가 정한다. */
 export type SectionId =
@@ -137,6 +138,86 @@ export interface UiStrings {
     columnLabel: (dimension: number) => string
     selectedHeading: (position: number) => string
     legendLabel: string
+    tableCaption: string
+    note: string
+  }
+  attention: {
+    heading: string
+    description: string
+    sentence: string
+    /** 예시 토큰 4개. 문장에 나오는 순서대로 둔다 (인과 마스크가 이 순서를 쓴다). */
+    tokens: string[]
+    /** 설명용 Q, K, V 벡터 (토큰 수 × 차원). 실제 모델이 학습한 값이 아니다. */
+    q: number[][]
+    k: number[][]
+    v: number[][]
+    /** V 의 두 성분에 붙인 설명용 이름 */
+    valueDims: [string, string]
+    queryLegend: string
+    causalLabel: string
+    weightsHeading: (token: string) => string
+    masked: string
+    maskedNote: (token: string) => string
+    outputHeading: (token: string) => string
+    detailsSummary: string
+    steps: { vectors: string; scores: string; scaled: string; softmax: string; output: string }
+    columns: {
+      token: string
+      q: string
+      k: string
+      v: string
+      score: string
+      scaled: string
+      weight: string
+    }
+    note: string
+  }
+  ffn: {
+    heading: string
+    description: string
+    tokens: string[]
+    /** 각 토큰의 입력 벡터 (어텐션을 거친 뒤라고 가정) */
+    inputs: number[][]
+    w1: number[][]
+    b1: number[]
+    w2: number[][]
+    b2: number[]
+    selectLegend: string
+    sharedLabel: string
+    stageLabels: { input: string; preActivation: string; hidden: string; output: string }
+    zeroNote: string
+    note: string
+  }
+  stack: {
+    heading: string
+    description: string
+    sliderLabel: string
+    layerLabel: (count: number) => string
+    layersCaption: (count: number) => string
+    layerTitle: (index: number) => string
+    attention: string
+    ffn: string
+    norm: string
+    residual: string
+    inputLabel: string
+    outputLabel: string
+    note: string
+  }
+  training: {
+    heading: string
+    description: string
+    context: string
+    answerLabel: string
+    answer: string
+    candidates: Candidate[]
+    stepOnce: string
+    stepMany: string
+    reset: string
+    stepsLabel: string
+    lossLabel: string
+    answerProbabilityLabel: string
+    columns: { token: string; probability: string }
+    correctMark: string
     tableCaption: string
     note: string
   }

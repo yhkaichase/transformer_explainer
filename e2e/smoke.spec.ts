@@ -84,3 +84,25 @@ test('온도 슬라이더, 흐름 단계, 위치 인코딩 데모가 동작한�
   await positional.getByRole('button', { name: '위치 5' }).click()
   await expect(positional.getByRole('heading', { level: 4 })).toHaveText('위치 5의 패턴')
 })
+
+test('어텐션, 피드포워드, 층 쌓기, 학습 데모가 동작한다', async ({ page }) => {
+  await page.goto('/')
+
+  const attention = page.getByTestId('attention-demo')
+  await attention.getByRole('checkbox').check()
+  await expect(attention.getByText('가려짐')).toHaveCount(3)
+  await attention.getByRole('radio', { name: '돈' }).check()
+  await expect(attention.getByText('가려짐')).toHaveCount(1)
+
+  const ffn = page.getByTestId('ffn-demo')
+  await ffn.getByRole('radio', { name: '돈' }).check()
+  await expect(ffn.getByText('[1.00, 0.10]')).toBeVisible()
+
+  const stack = page.getByTestId('stack-demo')
+  await stack.getByRole('slider').fill('3')
+  await expect(stack.getByRole('list', { name: '층 수' }).getByRole('listitem')).toHaveCount(3)
+
+  const training = page.getByTestId('training-demo')
+  await training.getByRole('button', { name: '10번 학습' }).click()
+  await expect(training.getByText('학습 횟수').locator('..')).toContainText('10')
+})

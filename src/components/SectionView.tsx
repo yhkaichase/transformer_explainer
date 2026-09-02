@@ -2,17 +2,25 @@ import type { ComponentType } from 'react'
 import type { InteractiveKind, Section } from '../content/types'
 import { useAudience } from '../state/audience-context'
 import { useLocale } from '../state/locale-context'
+import { AttentionDemo } from './AttentionDemo'
 import { Callout } from './Callout'
+import { FeedForwardDemo } from './FeedForwardDemo'
 import { FlowDiagram } from './FlowDiagram'
+import { LayerStackDemo } from './LayerStackDemo'
 import { PositionalEncodingDemo } from './PositionalEncodingDemo'
 import { TemperatureDemo } from './TemperatureDemo'
 import { TokenizerDemo } from './TokenizerDemo'
+import { TrainingDemo } from './TrainingDemo'
 
 const INTERACTIVES: Record<InteractiveKind, ComponentType> = {
   tokenizer: TokenizerDemo,
   flow: FlowDiagram,
   temperature: TemperatureDemo,
   positional: PositionalEncodingDemo,
+  attention: AttentionDemo,
+  ffn: FeedForwardDemo,
+  stack: LayerStackDemo,
+  training: TrainingDemo,
 }
 
 export function SectionView({ section }: { section: Section }) {

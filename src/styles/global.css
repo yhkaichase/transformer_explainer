@@ -988,3 +988,374 @@ textarea {
   color: var(--text-muted);
   word-break: break-all;
 }
+
+/* ------------------------------------------------------------------
+   데모 공통 2: 선택 칩, 체크박스, 계산 과정, 통계 타일
+------------------------------------------------------------------ */
+.demo-subheading {
+  margin: 14px 0 6px;
+  font-size: 0.95rem;
+}
+
+.choice-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 10px;
+  padding: 0;
+  border: 0;
+}
+
+.choice-group legend {
+  float: left;
+  margin-right: 6px;
+  padding: 0;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.choice-chip {
+  position: relative;
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.choice-chip input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.choice-chip:has(input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.choice-chip.is-active {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 600;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.checkbox-row input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+}
+
+.masked {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.prob-table tr.is-self th {
+  text-decoration: underline;
+  text-decoration-color: var(--text-muted);
+  text-underline-offset: 3px;
+}
+
+.vector {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  word-break: break-word;
+}
+
+.attention-output {
+  margin: 10px 0 6px;
+  font-size: 0.95rem;
+}
+
+.attention-output-dims {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.calc-details {
+  margin: 8px 0 12px;
+  padding: 4px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+
+.calc-details summary {
+  padding: 6px 0;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.calc-details h5 {
+  margin: 12px 0 4px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.calc-details p.vector {
+  margin: 0 0 4px;
+  white-space: pre-wrap;
+}
+
+.calc-table {
+  border-collapse: collapse;
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.table-scroll {
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.calc-table th,
+.calc-table td {
+  padding: 3px 10px 3px 0;
+  text-align: left;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.calc-table thead th {
+  font-weight: 600;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--viz-baseline);
+}
+
+.calc-table tbody th {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.stat-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+
+.stat {
+  flex: 1 1 120px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+}
+
+.stat dt {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.stat dd {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.training-answer {
+  font-weight: 400;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.answer-mark {
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-size: 0.7rem;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+/* ------------------------------------------------------------------
+   피드포워드 데모: 토큰별 독립 경로
+------------------------------------------------------------------ */
+.ffn-lanes {
+  display: flex;
+  justify-content: space-around;
+  gap: 8px;
+  margin: 8px 0 4px;
+  padding: 12px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+
+.ffn-lane {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  opacity: 0.45;
+  transition: opacity 120ms;
+}
+
+.ffn-lane.is-active {
+  opacity: 1;
+}
+
+.ffn-token {
+  padding: 2px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.ffn-arrow {
+  color: var(--text-muted);
+  line-height: 1;
+}
+
+.ffn-box {
+  padding: 6px 14px;
+  border: 2px solid var(--accent);
+  border-radius: 8px;
+  background: var(--accent-soft);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+}
+
+.ffn-numbers {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 14px;
+  margin: 10px 0;
+}
+
+.ffn-numbers div {
+  display: contents;
+}
+
+.ffn-numbers dt {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.ffn-numbers dd {
+  margin: 0;
+}
+
+/* ------------------------------------------------------------------
+   층 쌓기 데모
+------------------------------------------------------------------ */
+.stack-diagram {
+  margin: 8px 0;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+
+.stack-io {
+  margin: 0;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.stack-layers {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 8px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stack-layer {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.stack-layer-title {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.stack-sublayers {
+  display: flex;
+  gap: 8px;
+}
+
+.sublayer {
+  flex: 1;
+  width: 100%;
+  height: auto;
+}
+
+.sublayer-skip {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+
+.sublayer-line {
+  stroke: var(--text-muted);
+  stroke-width: 1.5;
+}
+
+.sublayer-box {
+  fill: var(--accent-soft);
+  stroke: var(--accent);
+  stroke-width: 1.2;
+}
+
+.sublayer-norm {
+  fill: var(--surface);
+  stroke: var(--text-muted);
+}
+
+.sublayer-text {
+  fill: var(--text);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.sublayer-add {
+  fill: var(--surface);
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+
+.sublayer-plus {
+  fill: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+@media (max-width: 480px) {
+  .stack-sublayers {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .ffn-lanes {
+    flex-wrap: wrap;
+  }
+}

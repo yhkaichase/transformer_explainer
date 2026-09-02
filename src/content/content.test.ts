@@ -94,3 +94,43 @@ describe('demo data', () => {
     expect(en.ui.temperature.valueLabel(0.5)).toBe('Temperature 0.5')
   })
 })
+
+describe('demo data (attention, ffn, training)', () => {
+  it('어텐션 예시의 토큰 수와 벡터 차원이 언어 간에 같다', () => {
+    for (const { value } of LOCALES) {
+      const a = getContent(value).ui.attention
+      expect(a.tokens).toHaveLength(ko.ui.attention.tokens.length)
+      expect(a.q).toHaveLength(a.tokens.length)
+      expect(a.k).toHaveLength(a.tokens.length)
+      expect(a.v).toHaveLength(a.tokens.length)
+      a.q.forEach((row) => expect(row).toHaveLength(ko.ui.attention.q[0].length))
+      a.k.forEach((row) => expect(row).toHaveLength(ko.ui.attention.k[0].length))
+      a.v.forEach((row) => expect(row).toHaveLength(2))
+    }
+  })
+
+  it('피드포워드 예시의 행렬 크기가 맞는다', () => {
+    for (const { value } of LOCALES) {
+      const f = getContent(value).ui.ffn
+      expect(f.inputs).toHaveLength(f.tokens.length)
+      const dModel = f.inputs[0].length
+      const dFf = f.w1[0].length
+      expect(f.w1).toHaveLength(dModel)
+      expect(f.b1).toHaveLength(dFf)
+      expect(f.w2).toHaveLength(dFf)
+      f.w2.forEach((row) => expect(row).toHaveLength(dModel))
+      expect(f.b2).toHaveLength(dModel)
+    }
+  })
+
+  it('학습 예시의 정답이 후보에 있고 처음에는 1등이 아니다', () => {
+    for (const { value } of LOCALES) {
+      const t = getContent(value).ui.training
+      const index = t.candidates.findIndex((c) => c.token === t.answer)
+      expect(index).toBeGreaterThan(0)
+      expect(t.candidates.map((c) => c.score)).toEqual(
+        ko.ui.training.candidates.map((c) => c.score),
+      )
+    }
+  })
+})
