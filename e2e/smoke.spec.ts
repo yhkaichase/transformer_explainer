@@ -62,3 +62,25 @@ test('화면 스크린샷을 남긴다', async ({ page }) => {
   await page.getByRole('radio', { name: 'English' }).check()
   await page.screenshot({ path: 'test-results/home-english.png', fullPage: true })
 })
+
+test('온도 슬라이더, 흐름 단계, 위치 인코딩 데모가 동작한다', async ({ page }) => {
+  await page.goto('/')
+
+  const temperature = page.getByTestId('temperature-demo')
+  await temperature.getByRole('slider').fill('0.2')
+  await expect(temperature.getByRole('row').nth(1)).toContainText(/9\d\.\d%/)
+  await temperature.getByRole('button', { name: '10번 뽑기' }).click()
+  await expect(temperature.getByTestId('draw-results').locator('.draw-chip')).toHaveCount(10)
+
+  const flow = page.getByTestId('flow-diagram')
+  await flow.getByRole('button', { name: '다음 단계' }).click()
+  await expect(flow.getByText('2단계 / 6단계')).toBeVisible()
+  await expect(flow.getByRole('link', { name: '이 단계 자세히 보기' })).toHaveAttribute(
+    'href',
+    '#position',
+  )
+
+  const positional = page.getByTestId('positional-demo')
+  await positional.getByRole('button', { name: '위치 5' }).click()
+  await expect(positional.getByRole('heading', { level: 4 })).toHaveText('위치 5의 패턴')
+})

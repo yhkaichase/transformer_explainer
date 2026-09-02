@@ -5,14 +5,14 @@ import type { SectionMeta } from './types'
  * 새 섹션을 추가하면 types.ts 의 SectionId 와 ko.ts / en.ts 의 본문도 함께 추가해야 컴파일된다.
  */
 export const SECTION_META: SectionMeta[] = [
-  { id: 'intro' },
+  { id: 'intro', interactive: 'flow' },
   { id: 'tokens', interactive: 'tokenizer' },
-  { id: 'position' },
+  { id: 'position', interactive: 'positional' },
   { id: 'attention' },
   { id: 'multihead' },
   { id: 'ffn' },
   { id: 'stack' },
-  { id: 'output' },
+  { id: 'output', interactive: 'temperature' },
   { id: 'training' },
   { id: 'summary' },
 ]

@@ -43,6 +43,88 @@ export const ko: LocalePack = {
       note: '이 데모는 이해를 돕기 위해 공백과 문장부호 기준으로만 나눕니다. 실제 모델은 서브워드 단위로 더 잘게 나누므로 조각 수와 경계가 다를 수 있습니다.',
       defaultText: '은행에 가서 돈을 찾았다.',
     },
+    flow: {
+      heading: '한눈에 보기: 다음 단어가 만들어지는 6단계',
+      description:
+        '단계를 누르거나 "다음 단계" 버튼으로 넘기며 전체 흐름을 따라가 보세요. 각 단계는 아래 섹션 하나에 해당합니다.',
+      prev: '이전 단계',
+      next: '다음 단계',
+      stepLabel: (index, total) => `${index}단계 / ${total}단계`,
+      goToSection: '이 단계 자세히 보기',
+      stages: [
+        {
+          section: 'tokens',
+          label: '토큰으로 나누기',
+          detail: '문장을 조각(토큰)으로 나누고, 각 조각을 숫자 목록(벡터)으로 바꿉니다.',
+        },
+        {
+          section: 'position',
+          label: '순서 더하기',
+          detail: '각 토큰에 "몇 번째 자리인지"를 나타내는 숫자를 더합니다.',
+        },
+        {
+          section: 'attention',
+          label: '서로 참고하기',
+          detail: '어텐션. 각 토큰이 다른 토큰들을 둘러보고, 자기 뜻에 중요한 정보를 가져옵니다.',
+        },
+        {
+          section: 'ffn',
+          label: '각자 정리하기',
+          detail: '피드포워드 층. 각 토큰이 가져온 정보를 다른 토큰을 보지 않고 혼자 소화합니다.',
+        },
+        {
+          section: 'stack',
+          label: '여러 층 반복',
+          detail: '3단계와 4단계 묶음을 층으로 여러 번 쌓아 점점 더 깊은 문맥을 반영합니다.',
+        },
+        {
+          section: 'output',
+          label: '다음 단어 뽑기',
+          detail:
+            '어휘 전체에 대한 확률을 계산해 하나를 뽑고, 문장 끝에 붙인 뒤 1단계부터 다시 시작합니다.',
+        },
+      ],
+    },
+    temperature: {
+      heading: '직접 해보기: 온도를 바꾸며 다음 단어 뽑기',
+      description:
+        '모델이 계산한 점수를 확률로 바꿀 때 온도가 어떻게 작용하는지 보세요. 슬라이더를 움직인 뒤 뽑기 버튼을 눌러 보세요.',
+      context: '나는 아침에 커피를 ___',
+      sliderLabel: '온도',
+      valueLabel: (temperature) => `온도 ${temperature.toFixed(1)}`,
+      draw: '한 번 뽑기',
+      drawMany: '10번 뽑기',
+      resultHeading: '뽑기 결과',
+      tableCaption: '후보 단어별 확률',
+      columns: { rank: '순위', token: '후보 단어', probability: '확률' },
+      candidates: [
+        { token: '마셨다', score: 3.0 },
+        { token: '마신다', score: 2.2 },
+        { token: '샀다', score: 1.6 },
+        { token: '내렸다', score: 1.2 },
+        { token: '좋아한다', score: 0.8 },
+        { token: '쏟았다', score: 0.2 },
+        { token: '먹었다', score: -0.3 },
+        { token: '보았다', score: -1.0 },
+      ],
+      regimes: {
+        low: '온도가 낮으면 1등 단어에 확률이 몰립니다. 답이 안정적이지만 늘 같은 말을 합니다.',
+        neutral: '온도 1.0 은 모델이 계산한 확률을 그대로 씁니다.',
+        high: '온도가 높으면 확률이 고르게 퍼집니다. 다양하지만 엉뚱한 단어가 뽑힐 수 있습니다.',
+      },
+      note: '후보 단어와 점수는 설명을 위해 만든 예시이며 실제 모델의 출력이 아닙니다. 점수를 확률로 바꾸는 계산(softmax 와 온도)은 실제와 같습니다.',
+    },
+    positional: {
+      heading: '직접 해보기: 자리마다 다른 위치 패턴',
+      description:
+        '원 논문의 사인·코사인 위치 인코딩입니다. 행 하나가 위치 하나이고, 어떤 두 행도 같은 패턴이 아닙니다. 행 이름을 누르면 그 위치의 숫자들을 볼 수 있습니다.',
+      rowLabel: (position) => `위치 ${position}`,
+      columnLabel: (dimension) => `차원 ${dimension}`,
+      selectedHeading: (position) => `위치 ${position}의 패턴`,
+      legendLabel: '값: 파랑이 -1, 회색이 0, 빨강이 +1',
+      tableCaption: '위치별 인코딩 값 (행: 위치, 열: 차원)',
+      note: '설명을 위해 차원을 16개로 줄였습니다(원 논문은 512). 계산식은 원 논문 3.5절과 같습니다. 왼쪽 차원일수록 빠르게 변하고 오른쪽 차원일수록 느리게 변합니다.',
+    },
     sourcesTitle: '참고 자료',
   },
 

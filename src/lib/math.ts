@@ -98,3 +98,39 @@ export function layerNorm(x: Vector, epsilon = 1e-5): Vector {
   const denominator = Math.sqrt(variance + epsilon)
   return x.map((value) => (value - mean) / denominator)
 }
+
+/**
+ * 원 논문 3.5절의 사인·코사인 위치 인코딩.
+ *   PE(pos, 2i)   = sin(pos / base^(2i / d_model))
+ *   PE(pos, 2i+1) = cos(pos / base^(2i / d_model))
+ * 짝수 차원은 sin, 홀수 차원은 cos 이며, 앞쪽 차원일수록 빠르게 변한다.
+ */
+export function positionalEncoding(position: number, dModel: number, base = 10000): Vector {
+  if (!Number.isInteger(dModel) || dModel <= 0 || dModel % 2 !== 0) {
+    throw new RangeError('d_model 은 양의 짝수여야 합니다.')
+  }
+  const encoding: Vector = []
+  for (let i = 0; i < dModel / 2; i++) {
+    const angle = position / base ** ((2 * i) / dModel)
+    encoding.push(Math.sin(angle), Math.cos(angle))
+  }
+  return encoding
+}
+
+/**
+ * 확률 벡터에서 인덱스 하나를 뽑는다 (누적 확률 방식).
+ * random 은 [0, 1) 범위의 난수를 돌려주는 함수. 테스트에서는 고정 함수를 넣는다.
+ */
+export function sampleIndex(probabilities: Vector, random: () => number = Math.random): number {
+  if (probabilities.length === 0) {
+    throw new RangeError('확률 벡터가 비어 있습니다.')
+  }
+  const r = random()
+  let cumulative = 0
+  for (let i = 0; i < probabilities.length; i++) {
+    cumulative += probabilities[i]
+    if (r < cumulative) return i
+  }
+  // 부동소수점 오차로 합이 1 에 조금 못 미칠 때는 마지막 항목을 돌려준다.
+  return probabilities.length - 1
+}

@@ -64,3 +64,33 @@ describe('content parity between locales', () => {
     expect(en.ui.tokenizer.count(5)).toBe('5 tokens')
   })
 })
+
+describe('demo data', () => {
+  it('흐름 단계와 온도 데모 후보가 언어 간에 같은 구조를 가진다', () => {
+    expect(en.ui.flow.stages.map((s) => s.section)).toEqual(ko.ui.flow.stages.map((s) => s.section))
+    expect(en.ui.temperature.candidates.map((c) => c.score)).toEqual(
+      ko.ui.temperature.candidates.map((c) => c.score),
+    )
+  })
+
+  it('흐름 단계가 가리키는 섹션이 실제로 존재한다', () => {
+    const ids = new Set(SECTION_META.map((m) => m.id))
+    for (const stage of ko.ui.flow.stages) expect(ids.has(stage.section)).toBe(true)
+  })
+
+  it('온도 데모 후보는 점수 내림차순이고 단어가 겹치지 않는다', () => {
+    for (const { value } of LOCALES) {
+      const candidates = getContent(value).ui.temperature.candidates
+      const scores = candidates.map((c) => c.score)
+      expect(scores).toEqual([...scores].sort((a, b) => b - a))
+      expect(new Set(candidates.map((c) => c.token)).size).toBe(candidates.length)
+    }
+  })
+
+  it('언어별 문구 함수가 동작한다', () => {
+    expect(ko.ui.flow.stepLabel(2, 6)).toBe('2단계 / 6단계')
+    expect(en.ui.flow.stepLabel(2, 6)).toBe('Step 2 of 6')
+    expect(ko.ui.positional.selectedHeading(3)).toBe('위치 3의 패턴')
+    expect(en.ui.temperature.valueLabel(0.5)).toBe('Temperature 0.5')
+  })
+})

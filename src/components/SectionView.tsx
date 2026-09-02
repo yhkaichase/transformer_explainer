@@ -3,10 +3,16 @@ import type { InteractiveKind, Section } from '../content/types'
 import { useAudience } from '../state/audience-context'
 import { useLocale } from '../state/locale-context'
 import { Callout } from './Callout'
+import { FlowDiagram } from './FlowDiagram'
+import { PositionalEncodingDemo } from './PositionalEncodingDemo'
+import { TemperatureDemo } from './TemperatureDemo'
 import { TokenizerDemo } from './TokenizerDemo'
 
 const INTERACTIVES: Record<InteractiveKind, ComponentType> = {
   tokenizer: TokenizerDemo,
+  flow: FlowDiagram,
+  temperature: TemperatureDemo,
+  positional: PositionalEncodingDemo,
 }
 
 export function SectionView({ section }: { section: Section }) {

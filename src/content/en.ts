@@ -43,6 +43,92 @@ export const en: LocalePack = {
       note: 'To keep the idea visible, this demo splits only on spaces and punctuation. Real models use subword tokenizers, so the number of pieces and their boundaries can differ.',
       defaultText: 'I went to the bank to withdraw money.',
     },
+    flow: {
+      heading: 'At a glance: the six steps that produce the next word',
+      description:
+        'Click a step, or use the "Next step" button, to follow the whole flow. Each step corresponds to one section below.',
+      prev: 'Previous step',
+      next: 'Next step',
+      stepLabel: (index, total) => `Step ${index} of ${total}`,
+      goToSection: 'Read more about this step',
+      stages: [
+        {
+          section: 'tokens',
+          label: 'Split into tokens',
+          detail:
+            'Cut the sentence into pieces (tokens) and turn each piece into a list of numbers (a vector).',
+        },
+        {
+          section: 'position',
+          label: 'Add order',
+          detail: 'Add numbers to each token that encode which position it is in.',
+        },
+        {
+          section: 'attention',
+          label: 'Consult each other',
+          detail:
+            'Attention. Each token looks around at the other tokens and pulls in the information that matters to its meaning.',
+        },
+        {
+          section: 'ffn',
+          label: 'Think it over alone',
+          detail:
+            'The feed-forward layer. Each token digests what it collected without looking at any other token.',
+        },
+        {
+          section: 'stack',
+          label: 'Repeat in layers',
+          detail:
+            'Steps 3 and 4 form a layer. Stacking many layers folds in progressively deeper context.',
+        },
+        {
+          section: 'output',
+          label: 'Draw the next word',
+          detail:
+            'Compute a probability for every word in the vocabulary, draw one, append it to the text, and start again from step 1.',
+        },
+      ],
+    },
+    temperature: {
+      heading: 'Try it: change the temperature and draw the next word',
+      description:
+        'See how temperature acts when the model turns its scores into probabilities. Move the slider, then press a draw button.',
+      context: 'Every morning I drink a cup of ___',
+      sliderLabel: 'Temperature',
+      valueLabel: (temperature) => `Temperature ${temperature.toFixed(1)}`,
+      draw: 'Draw once',
+      drawMany: 'Draw 10 times',
+      resultHeading: 'Draws',
+      tableCaption: 'Probability of each candidate word',
+      columns: { rank: 'Rank', token: 'Candidate', probability: 'Probability' },
+      candidates: [
+        { token: 'coffee', score: 3.0 },
+        { token: 'tea', score: 2.2 },
+        { token: 'water', score: 1.6 },
+        { token: 'juice', score: 1.2 },
+        { token: 'milk', score: 0.8 },
+        { token: 'cocoa', score: 0.2 },
+        { token: 'soup', score: -0.3 },
+        { token: 'wine', score: -1.0 },
+      ],
+      regimes: {
+        low: 'At low temperature the probability piles onto the top word. Answers are stable, but the model keeps saying the same thing.',
+        neutral: 'Temperature 1.0 uses the probabilities exactly as the model computed them.',
+        high: 'At high temperature the probability spreads out evenly. More variety, but odd words can be drawn.',
+      },
+      note: 'The candidate words and scores are made up for this explanation and are not the output of a real model. The computation that turns scores into probabilities (softmax with temperature) is the real one.',
+    },
+    positional: {
+      heading: 'Try it: a different pattern for every position',
+      description:
+        "The original paper's sine and cosine positional encoding. Each row is one position, and no two rows share a pattern. Click a row name to see the numbers for that position.",
+      rowLabel: (position) => `Position ${position}`,
+      columnLabel: (dimension) => `Dimension ${dimension}`,
+      selectedHeading: (position) => `Pattern for position ${position}`,
+      legendLabel: 'Value: blue is -1, gray is 0, red is +1',
+      tableCaption: 'Encoding values by position (rows: positions, columns: dimensions)',
+      note: 'The dimension is reduced to 16 for this explanation (the original paper uses 512). The formula is the one in section 3.5 of the paper. Dimensions on the left change quickly and those on the right change slowly.',
+    },
     sourcesTitle: 'References',
   },
 

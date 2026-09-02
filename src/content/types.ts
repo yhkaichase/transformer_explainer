@@ -5,7 +5,7 @@ export type Audience = 'executive' | 'engineer'
 export type Locale = 'ko' | 'en'
 
 /** 섹션 안에 끼워 넣는 인터랙티브 데모의 종류. */
-export type InteractiveKind = 'tokenizer'
+export type InteractiveKind = 'tokenizer' | 'flow' | 'temperature' | 'positional'
 
 /** 섹션 식별자. URL 해시와 DOM id 로 쓰인다. 순서는 structure.ts 가 정한다. */
 export type SectionId =
@@ -62,6 +62,19 @@ export interface Source {
   url: string
 }
 
+/** 전체 흐름 다이어그램의 단계 하나. section 은 자세히 보기 링크 대상. */
+export interface FlowStage {
+  section: SectionId
+  label: string
+  detail: string
+}
+
+/** 온도 데모의 후보 단어와 (모델이 계산했다고 가정한) 점수. 점수 내림차순으로 둔다. */
+export interface Candidate {
+  token: string
+  score: number
+}
+
 /** 본문 밖의 UI 문자열. */
 export interface UiStrings {
   documentTitle: string
@@ -90,6 +103,42 @@ export interface UiStrings {
     count: (n: number) => string
     note: string
     defaultText: string
+  }
+  flow: {
+    heading: string
+    description: string
+    prev: string
+    next: string
+    stepLabel: (index: number, total: number) => string
+    goToSection: string
+    stages: FlowStage[]
+  }
+  temperature: {
+    heading: string
+    description: string
+    /** 빈칸이 있는 문맥 문장. 예: "나는 아침에 커피를 ___" */
+    context: string
+    sliderLabel: string
+    valueLabel: (temperature: number) => string
+    draw: string
+    drawMany: string
+    resultHeading: string
+    tableCaption: string
+    columns: { rank: string; token: string; probability: string }
+    candidates: Candidate[]
+    /** 온도 구간별 한 줄 설명 */
+    regimes: { low: string; neutral: string; high: string }
+    note: string
+  }
+  positional: {
+    heading: string
+    description: string
+    rowLabel: (position: number) => string
+    columnLabel: (dimension: number) => string
+    selectedHeading: (position: number) => string
+    legendLabel: string
+    tableCaption: string
+    note: string
   }
   sourcesTitle: string
 }

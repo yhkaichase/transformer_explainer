@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { dot, layerNorm, matMul, scaledDotProductAttention, softmax, transpose } from './math'
+import {
+  dot,
+  layerNorm,
+  matMul,
+  positionalEncoding,
+  sampleIndex,
+  scaledDotProductAttention,
+  softmax,
+  transpose,
+} from './math'
 
 const sum = (xs: number[]) => xs.reduce((a, b) => a + b, 0)
 
@@ -156,5 +165,61 @@ describe('layerNorm', () => {
 
   it('빈 입력은 빈 배열', () => {
     expect(layerNorm([])).toEqual([])
+  })
+})
+
+describe('positionalEncoding', () => {
+  it('위치 0 은 [0, 1, 0, 1, ...] 이다', () => {
+    expect(positionalEncoding(0, 6)).toEqual([0, 1, 0, 1, 0, 1])
+  })
+
+  it('짝수 차원은 sin, 홀수 차원은 cos 이며 첫 쌍의 각도는 위치 그 자체다', () => {
+    const pe = positionalEncoding(3, 4)
+    expect(pe[0]).toBeCloseTo(Math.sin(3), 10)
+    expect(pe[1]).toBeCloseTo(Math.cos(3), 10)
+    // 두 번째 쌍: 각도 = 3 / 10000^(2/4)
+    expect(pe[2]).toBeCloseTo(Math.sin(3 / Math.sqrt(10000)), 10)
+    expect(pe[3]).toBeCloseTo(Math.cos(3 / Math.sqrt(10000)), 10)
+  })
+
+  it('모든 값은 -1 과 1 사이이고, 서로 다른 위치는 다른 패턴을 갖는다', () => {
+    const a = positionalEncoding(5, 16)
+    const b = positionalEncoding(6, 16)
+    expect(a).toHaveLength(16)
+    a.forEach((v) => {
+      expect(v).toBeGreaterThanOrEqual(-1)
+      expect(v).toBeLessThanOrEqual(1)
+    })
+    expect(a).not.toEqual(b)
+  })
+
+  it('d_model 이 홀수이거나 0 이하이면 오류', () => {
+    expect(() => positionalEncoding(1, 3)).toThrow(RangeError)
+    expect(() => positionalEncoding(1, 0)).toThrow(RangeError)
+  })
+})
+
+describe('sampleIndex', () => {
+  it('난수가 누적 확률 구간에 해당하는 인덱스를 돌려준다', () => {
+    const p = [0.2, 0.5, 0.3]
+    expect(sampleIndex(p, () => 0)).toBe(0)
+    expect(sampleIndex(p, () => 0.19)).toBe(0)
+    expect(sampleIndex(p, () => 0.2)).toBe(1)
+    expect(sampleIndex(p, () => 0.69)).toBe(1)
+    expect(sampleIndex(p, () => 0.7)).toBe(2)
+    expect(sampleIndex(p, () => 0.999)).toBe(2)
+  })
+
+  it('확률 0 인 항목은 뽑히지 않는다', () => {
+    expect(sampleIndex([0, 1, 0], () => 0.5)).toBe(1)
+    expect(sampleIndex([0, 1, 0], () => 0)).toBe(1)
+  })
+
+  it('합이 1 에 조금 못 미쳐도 마지막 항목을 돌려준다', () => {
+    expect(sampleIndex([0.3, 0.3, 0.3999], () => 0.99999)).toBe(2)
+  })
+
+  it('빈 벡터는 오류', () => {
+    expect(() => sampleIndex([], () => 0)).toThrow(RangeError)
   })
 })
