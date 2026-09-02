@@ -14,5 +14,5 @@ export const SECTION_META: SectionMeta[] = [
   { id: 'stack', interactive: 'stack' },
   { id: 'output', interactive: 'temperature' },
   { id: 'training', interactive: 'training' },
-  { id: 'summary' },
+  { id: 'summary', interactive: 'summary' },
 ]

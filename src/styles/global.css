@@ -1359,3 +1359,94 @@ textarea {
     flex-wrap: wrap;
   }
 }
+
+/* ------------------------------------------------------------------
+   정리 섹션 요약 카드
+------------------------------------------------------------------ */
+.summary-card {
+  display: grid;
+  gap: 16px;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.summary-panel {
+  padding: 20px 22px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.summary-panel h3 {
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+}
+
+.summary-panel h4 {
+  margin: 16px 0 6px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.summary-steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: summary-step;
+}
+
+.summary-steps li {
+  position: relative;
+  padding: 4px 0 4px 36px;
+  counter-increment: summary-step;
+}
+
+.summary-steps li::before {
+  content: counter(summary-step);
+  position: absolute;
+  left: 0;
+  top: 5px;
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.summary-takeaways {
+  margin: 0;
+  padding: 0 0 0 1.2em;
+}
+
+.summary-takeaways li {
+  margin-bottom: 4px;
+}
+
+.summary-engineer {
+  background: var(--engineer-bg);
+  border-color: var(--engineer-border);
+}
+
+.summary-next {
+  margin: 0;
+  padding: 0 0 0 1.4em;
+}
+
+.summary-next li {
+  margin-bottom: 8px;
+}
+
+.summary-next a {
+  font-weight: 600;
+}
+
+.summary-detail {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}

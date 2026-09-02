@@ -134,3 +134,20 @@ describe('demo data (attention, ffn, training)', () => {
     }
   })
 })
+
+describe('summary card data', () => {
+  it('요약 단계·핵심·다음 단계 수와 링크가 언어 간에 같다', () => {
+    expect(en.ui.summary.steps).toHaveLength(ko.ui.summary.steps.length)
+    expect(en.ui.summary.takeaways).toHaveLength(ko.ui.summary.takeaways.length)
+    expect(en.ui.summary.nextSteps.map((n) => n.url)).toEqual(
+      ko.ui.summary.nextSteps.map((n) => n.url),
+    )
+  })
+
+  it('모든 섹션이 검수를 마쳐 ready 상태다', () => {
+    for (const { value } of LOCALES) {
+      for (const section of getContent(value).sections)
+        expect(section.status, section.id).toBe('ready')
+    }
+  })
+})

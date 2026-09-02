@@ -106,3 +106,16 @@ test('어텐션, 피드포워드, 층 쌓기, 학습 데모가 동작한다', as
   await training.getByRole('button', { name: '10번 학습' }).click()
   await expect(training.getByText('학습 횟수').locator('..')).toContainText('10')
 })
+
+test('정리 섹션의 요약 카드는 엔지니어용에서 다음 단계 링크를 보여 준다', async ({ page }) => {
+  await page.goto('/')
+  const card = page.getByTestId('summary-card')
+  await expect(card.getByRole('heading', { name: '1분 요약' })).toBeVisible()
+  await expect(card.getByRole('link', { name: '원 논문 읽기' })).toHaveCount(0)
+  await page.getByRole('radio', { name: /엔지니어용/ }).check()
+  await expect(card.getByRole('link', { name: '원 논문 읽기' })).toHaveAttribute(
+    'href',
+    'https://arxiv.org/abs/1706.03762',
+  )
+  await expect(page.getByText('초안')).toHaveCount(0)
+})

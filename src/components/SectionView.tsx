@@ -9,6 +9,7 @@ import { FlowDiagram } from './FlowDiagram'
 import { LayerStackDemo } from './LayerStackDemo'
 import { PositionalEncodingDemo } from './PositionalEncodingDemo'
 import { TemperatureDemo } from './TemperatureDemo'
+import { SummaryCard } from './SummaryCard'
 import { TokenizerDemo } from './TokenizerDemo'
 import { TrainingDemo } from './TrainingDemo'
 
@@ -21,6 +22,7 @@ const INTERACTIVES: Record<InteractiveKind, ComponentType> = {
   ffn: FeedForwardDemo,
   stack: LayerStackDemo,
   training: TrainingDemo,
+  summary: SummaryCard,
 }
 
 export function SectionView({ section }: { section: Section }) {

@@ -6,7 +6,15 @@ export type Locale = 'ko' | 'en'
 
 /** 섹션 안에 끼워 넣는 인터랙티브 데모의 종류. */
 export type InteractiveKind =
-  'tokenizer' | 'flow' | 'temperature' | 'positional' | 'attention' | 'ffn' | 'stack' | 'training'
+  | 'tokenizer'
+  | 'flow'
+  | 'temperature'
+  | 'positional'
+  | 'attention'
+  | 'ffn'
+  | 'stack'
+  | 'training'
+  | 'summary'
 
 /** 섹션 식별자. URL 해시와 DOM id 로 쓰인다. 순서는 structure.ts 가 정한다. */
 export type SectionId =
@@ -220,6 +228,14 @@ export interface UiStrings {
     correctMark: string
     tableCaption: string
     note: string
+  }
+  summary: {
+    cardTitle: string
+    steps: string[]
+    takeawaysTitle: string
+    takeaways: { lead: string; text: string }[]
+    nextStepsTitle: string
+    nextSteps: { label: string; detail: string; url: string }[]
   }
   sourcesTitle: string
 }
