@@ -298,6 +298,35 @@ export const ko: LocalePack = {
         },
       ],
     },
+    heatmap: {
+      heading: '실제 모델의 어텐션 보기',
+      description:
+        '실제 언어 모델이 예문을 읽을 때 각 토큰이 앞선 토큰들에 두는 가중치입니다. 행이 보는 토큰, 열이 보이는 토큰입니다. 예문, 층, 헤드를 바꿔 보고, 행 이름을 누르면 그 토큰이 가장 많이 보는 토큰을 알려 줍니다.',
+      emptyTitle: '실제 값 데이터가 아직 없습니다',
+      emptyBody:
+        'scripts/precompute_attention.py 를 실행해 예문의 어텐션 값을 계산하고 결과 파일(src/data/attention/ko.json, en.json)을 커밋하면 이 자리에 실제 모델의 히트맵이 나타납니다. 방법은 scripts/README.md 에 있습니다.',
+      errorsTitle: '데이터 파일을 읽지 못했습니다',
+      exampleLegend: '예문',
+      layerLabel: '층',
+      headLabel: '헤드',
+      layerOption: (index) => `${index + 1}층`,
+      headOption: (index) => `헤드 ${index + 1}`,
+      tableCaption: (layer, head) =>
+        `${layer + 1}층 헤드 ${head + 1}의 어텐션 가중치 (행: 보는 토큰, 열: 보이는 토큰)`,
+      cellTitle: (from, to, weight) => `"${from}" → "${to}": ${weight}`,
+      strongest: (from, to, weight) =>
+        `"${from}" 이 행에서 가장 큰 가중치는 "${to}" (${weight}) 입니다.`,
+      legendLabel:
+        '가중치: 옅을수록 0, 진할수록 1 에 가깝습니다. 빈 칸은 뒤에 오는 토큰이라 볼 수 없는 자리입니다.',
+      modelNote: (model, generatedAt) =>
+        `모델 ${model}, 계산 시각 ${generatedAt}. scripts/precompute_attention.py 로 계산한 실제 모델 출력입니다.`,
+    },
+    multihead: {
+      heading: '헤드마다 다른 관점: 실제 모델의 헤드 비교',
+      description:
+        '같은 층의 헤드들이 같은 문장을 서로 다르게 봅니다. 작은 그림을 눌러 헤드를 고르면 아래에 크게 보입니다.',
+      thumbsLabel: '헤드 목록',
+    },
     sourcesTitle: '참고 자료',
   },
 

@@ -1,0 +1,4 @@
+# scripts/precompute_attention.py 실행에 필요한 패키지.
+# CPU 만으로 충분하다. GPU 가 있으면 자동으로 쓴다.
+torch>=2.2
+transformers>=4.40

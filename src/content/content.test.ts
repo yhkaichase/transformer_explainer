@@ -22,7 +22,11 @@ describe('content structure', () => {
   })
 
   it('토큰 섹션에 토크나이저 데모가 붙어 있다', () => {
-    expect(ko.sections.find((s) => s.id === 'tokens')?.interactive).toBe('tokenizer')
+    expect(ko.sections.find((s) => s.id === 'tokens')?.interactives).toEqual(['tokenizer'])
+    expect(ko.sections.find((s) => s.id === 'attention')?.interactives).toEqual([
+      'attention',
+      'heatmap',
+    ])
   })
 })
 
@@ -149,5 +153,15 @@ describe('summary card data', () => {
       for (const section of getContent(value).sections)
         expect(section.status, section.id).toBe('ready')
     }
+  })
+})
+
+describe('real-value heatmap strings', () => {
+  it('언어별 문구 함수가 동작한다', () => {
+    expect(ko.ui.heatmap.layerOption(0)).toBe('1층')
+    expect(en.ui.heatmap.headOption(2)).toBe('Head 3')
+    expect(ko.ui.heatmap.cellTitle('은행', '돈', '0.65')).toContain('0.65')
+    expect(en.ui.heatmap.strongest('bank', 'money', '0.65')).toContain('money')
+    expect(ko.ui.heatmap.modelNote('gpt2', '2026-01-01')).toContain('gpt2')
   })
 })

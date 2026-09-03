@@ -32,9 +32,11 @@ src/
                 index.ts(getContent(locale)), types.ts
   components/   화면 조각. SectionView 가 섹션 하나를 그린다. 인터랙티브 데모는 *Demo.tsx
   state/        설명 수준(임원용/엔지니어용)과 언어(한국어/English) 컨텍스트
-  lib/          순수 계산 함수 (math.ts: softmax/어텐션, tokenize.ts). 반드시 테스트와 함께
+  lib/          순수 계산 함수 (math.ts: softmax/어텐션, tokenize.ts, attentionData.ts: 실제 값 파일 검사). 반드시 테스트와 함께
+  data/         attention/*.json: scripts/precompute_attention.py 가 만든 실제 어텐션 값 (없어도 빌드됨)
   styles/       global.css
 e2e/            Playwright 스모크 테스트
+scripts/        precompute_attention.py (실제 어텐션 값 사전 계산, 사용자 PC 에서 실행), examples.json
 docs/plan.md    콘텐츠 계획, 설계 원칙, 열린 질문
 ```
 
@@ -55,7 +57,8 @@ docs/plan.md    콘텐츠 계획, 설계 원칙, 열린 질문
 
 - 접근성: 폼 요소에는 label, 목차/데모에는 aria-label, 상태 변화에는 aria-live. 색만으로 정보를 구분하지 않는다.
 - `src/lib` 의 함수는 순수 함수로 두고 단위 테스트를 붙인다. 컴포넌트는 Testing Library 로 사용자 관점에서 테스트한다.
-- 새 인터랙티브 데모를 추가할 때: `content/types.ts` 의 `InteractiveKind` 에 이름을 추가하고, `SectionView.tsx` 의 `INTERACTIVES` 에 컴포넌트를 등록한 뒤, `content/structure.ts` 의 해당 섹션 `interactive` 에 지정한다. 데모 안의 문구는 `UiStrings` 에 넣어 두 언어로 제공한다.
+- 새 인터랙티브 데모를 추가할 때: `content/types.ts` 의 `InteractiveKind` 에 이름을 추가하고, `SectionView.tsx` 의 `INTERACTIVES` 에 컴포넌트를 등록한 뒤, `content/structure.ts` 의 해당 섹션 `interactives` 배열에 넣는다. 데모 안의 문구는 `UiStrings` 에 넣어 두 언어로 제공한다.
+- 실제 모델 값(`src/data/attention/*.json`)은 `scripts/precompute_attention.py` 의 출력만 쓴다. 손으로 만들거나 고치지 않는다. 파일이 없으면 데모가 안내 상태를 보여 주므로 빌드는 데이터 없이도 통과해야 한다.
 - 새 섹션을 추가할 때: `content/types.ts` 의 `SectionId` 에 id 를 추가하고, `structure.ts` 의 순서에 넣은 뒤, `ko.ts` 와 `en.ts` 에 본문을 쓴다. 한쪽이 빠지면 컴파일되지 않는다.
 - 커밋 메시지는 한국어 또는 영어 자유. 무엇을 왜 바꿨는지 첫 줄에 적는다.
 

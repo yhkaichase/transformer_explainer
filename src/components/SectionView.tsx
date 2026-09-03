@@ -3,10 +3,12 @@ import type { InteractiveKind, Section } from '../content/types'
 import { useAudience } from '../state/audience-context'
 import { useLocale } from '../state/locale-context'
 import { AttentionDemo } from './AttentionDemo'
+import { AttentionHeatmap } from './AttentionHeatmap'
 import { Callout } from './Callout'
 import { FeedForwardDemo } from './FeedForwardDemo'
 import { FlowDiagram } from './FlowDiagram'
 import { LayerStackDemo } from './LayerStackDemo'
+import { MultiHeadDemo } from './MultiHeadDemo'
 import { PositionalEncodingDemo } from './PositionalEncodingDemo'
 import { TemperatureDemo } from './TemperatureDemo'
 import { SummaryCard } from './SummaryCard'
@@ -19,6 +21,8 @@ const INTERACTIVES: Record<InteractiveKind, ComponentType> = {
   temperature: TemperatureDemo,
   positional: PositionalEncodingDemo,
   attention: AttentionDemo,
+  heatmap: AttentionHeatmap,
+  multihead: MultiHeadDemo,
   ffn: FeedForwardDemo,
   stack: LayerStackDemo,
   training: TrainingDemo,
@@ -28,7 +32,7 @@ const INTERACTIVES: Record<InteractiveKind, ComponentType> = {
 export function SectionView({ section }: { section: Section }) {
   const { audience } = useAudience()
   const { content } = useLocale()
-  const Interactive = section.interactive ? INTERACTIVES[section.interactive] : null
+  const interactives = section.interactives ?? []
   const headingId = `${section.id}-title`
 
   return (
@@ -48,7 +52,10 @@ export function SectionView({ section }: { section: Section }) {
         <p key={i}>{paragraph}</p>
       ))}
 
-      {Interactive && <Interactive />}
+      {interactives.map((kind) => {
+        const Interactive = INTERACTIVES[kind]
+        return <Interactive key={kind} />
+      })}
 
       {audience === 'engineer' && (
         <Callout kind="engineer" title={content.ui.engineerTitle}>

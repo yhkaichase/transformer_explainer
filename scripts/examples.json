@@ -1,0 +1,17 @@
+{
+  "en": [
+    { "id": "bank-money", "text": "I went to the bank to withdraw money" },
+    { "id": "bank-river", "text": "We sat on the bank of the river and watched the water" },
+    {
+      "id": "trophy-suitcase",
+      "text": "The trophy did not fit in the suitcase because it was too big"
+    },
+    { "id": "cat-mat", "text": "The cat sat on the mat because it was tired" }
+  ],
+  "ko": [
+    { "id": "bank-money", "text": "은행에 가서 돈을 찾았다" },
+    { "id": "bank-tree", "text": "은행나무 아래에서 잠시 쉬었다" },
+    { "id": "trophy-suitcase", "text": "트로피가 가방에 들어가지 않았다 너무 컸기 때문이다" },
+    { "id": "cat-mat", "text": "고양이가 매트 위에 앉았다 피곤했기 때문이다" }
+  ]
+}

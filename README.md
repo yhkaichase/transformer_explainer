@@ -49,6 +49,18 @@ e2e/             Playwright 스모크 테스트
 docs/plan.md     콘텐츠 계획과 열린 질문
 ```
 
+## 실제 어텐션 값 만들기
+
+섹션 4 의 "실제 모델의 어텐션 보기" 와 섹션 5 의 헤드 비교는 실제 모델 출력 파일이 있어야 나타납니다. 없으면 안내문이 보입니다.
+
+```bash
+pip install -r scripts/requirements.txt
+python scripts/precompute_attention.py --locale en --model gpt2
+python scripts/precompute_attention.py --locale ko --model <한국어 GPT-2 계열 모델 id>
+```
+
+생성된 `src/data/attention/*.json` 을 커밋하면 됩니다. 자세한 내용은 [scripts/README.md](scripts/README.md) 에 있습니다.
+
 ## 배포
 
 `main` 브랜치에 푸시하면 `.github/workflows/deploy.yml` 이 GitHub Pages 로 배포합니다.

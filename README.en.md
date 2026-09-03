@@ -51,6 +51,18 @@ docs/plan.md     Content plan and open questions (Korean)
 
 Both languages must always be edited together: a change to `ko.ts` needs the matching change in `en.ts`, and a unit test checks that paragraph and key-term counts stay equal.
 
+## Generating the real attention values
+
+"Attention in a real model" in section 4 and the head comparison in section 5 appear only when real model output files exist. Otherwise a notice is shown.
+
+```bash
+pip install -r scripts/requirements.txt
+python scripts/precompute_attention.py --locale en --model gpt2
+python scripts/precompute_attention.py --locale ko --model <a Korean GPT-2-style model id>
+```
+
+Commit the generated `src/data/attention/*.json`. Details are in [scripts/README.md](scripts/README.md) (Korean).
+
 ## Deployment
 
 Pushing to `main` deploys to GitHub Pages through `.github/workflows/deploy.yml`.

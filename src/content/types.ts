@@ -11,6 +11,8 @@ export type InteractiveKind =
   | 'temperature'
   | 'positional'
   | 'attention'
+  | 'heatmap'
+  | 'multihead'
   | 'ffn'
   | 'stack'
   | 'training'
@@ -37,7 +39,8 @@ export interface KeyTerm {
 /** 언어와 무관한 섹션 구조. */
 export interface SectionMeta {
   id: SectionId
-  interactive?: InteractiveKind
+  /** 본문 뒤에 순서대로 끼워 넣는 인터랙티브 데모들 */
+  interactives?: InteractiveKind[]
 }
 
 /** 언어별 섹션 본문. ko.ts 와 en.ts 가 SectionId 마다 하나씩 제공한다. */
@@ -236,6 +239,28 @@ export interface UiStrings {
     takeaways: { lead: string; text: string }[]
     nextStepsTitle: string
     nextSteps: { label: string; detail: string; url: string }[]
+  }
+  heatmap: {
+    heading: string
+    description: string
+    emptyTitle: string
+    emptyBody: string
+    errorsTitle: string
+    exampleLegend: string
+    layerLabel: string
+    headLabel: string
+    layerOption: (index: number) => string
+    headOption: (index: number) => string
+    tableCaption: (layer: number, head: number) => string
+    cellTitle: (from: string, to: string, weight: string) => string
+    strongest: (from: string, to: string, weight: string) => string
+    legendLabel: string
+    modelNote: (model: string, generatedAt: string) => string
+  }
+  multihead: {
+    heading: string
+    description: string
+    thumbsLabel: string
   }
   sourcesTitle: string
 }

@@ -309,6 +309,35 @@ export const en: LocalePack = {
         },
       ],
     },
+    heatmap: {
+      heading: 'Attention in a real model',
+      description:
+        'The weights a real language model assigns while reading an example sentence: how much each token attends to the tokens before it. Rows are the looking token, columns are the looked-at token. Change the example, layer, and head, and click a row name to see which token that row attends to most.',
+      emptyTitle: 'No real-value data yet',
+      emptyBody:
+        'Run scripts/precompute_attention.py to compute the attention values for the example sentences and commit the result files (src/data/attention/ko.json, en.json). The real heatmap then appears here. See scripts/README.md for the steps.',
+      errorsTitle: 'A data file could not be read',
+      exampleLegend: 'Example',
+      layerLabel: 'Layer',
+      headLabel: 'Head',
+      layerOption: (index) => `Layer ${index + 1}`,
+      headOption: (index) => `Head ${index + 1}`,
+      tableCaption: (layer, head) =>
+        `Attention weights of layer ${layer + 1}, head ${head + 1} (rows: looking token, columns: looked-at token)`,
+      cellTitle: (from, to, weight) => `"${from}" → "${to}": ${weight}`,
+      strongest: (from, to, weight) =>
+        `In the row for "${from}", the largest weight is on "${to}" (${weight}).`,
+      legendLabel:
+        'Weight: lighter is closer to 0, darker is closer to 1. Empty cells are later tokens, which cannot be seen.',
+      modelNote: (model, generatedAt) =>
+        `Model ${model}, computed ${generatedAt}. Real model output produced by scripts/precompute_attention.py.`,
+    },
+    multihead: {
+      heading: 'A different view per head: comparing heads of a real model',
+      description:
+        'The heads of one layer look at the same sentence in different ways. Click a small picture to choose a head and see it enlarged below.',
+      thumbsLabel: 'Heads',
+    },
     sourcesTitle: 'References',
   },
 

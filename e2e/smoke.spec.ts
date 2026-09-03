@@ -119,3 +119,10 @@ test('정리 섹션의 요약 카드는 엔지니어용에서 다음 단계 링�
   )
   await expect(page.getByText('초안')).toHaveCount(0)
 })
+
+test('실제 값 데이터가 없으면 어텐션 히트맵과 헤드 비교 자리에 안내가 나온다', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.getByTestId('attention-heatmap-empty')).toBeVisible()
+  await expect(page.getByTestId('multihead-empty')).toBeVisible()
+  await expect(page.getByText('실제 값 데이터가 아직 없습니다')).toHaveCount(2)
+})
