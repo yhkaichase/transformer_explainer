@@ -327,6 +327,43 @@ export const ko: LocalePack = {
         '같은 층의 헤드들이 같은 문장을 서로 다르게 봅니다. 작은 그림을 눌러 헤드를 고르면 아래에 크게 보입니다.',
       thumbsLabel: '헤드 목록',
     },
+    pipeline: {
+      heading: '직접 넣어 보기: 글을 바꾸면 모델이 실제로 계산합니다',
+      description:
+        '아래 글을 고치면 토큰, 임베딩, 어텐션, 다음 글자 확률이 모두 다시 계산됩니다. 이 페이지 안에 든 작은 모델이 브라우저에서 직접 돌아갑니다. 서버도, 인터넷도 필요 없습니다.',
+      inputLabel: '입력 글',
+      charCount: (count, max) => `${count} / ${max} 글자`,
+      emptyInput: '글자를 한 개 이상 입력하세요.',
+      stageTokens: '1. 토큰: 글자 하나가 토큰 하나',
+      stageEmbeddings: '2. 임베딩 + 위치: 토큰마다 숫자 목록',
+      stageAttention: '3. 어텐션: 누가 누구를 보는가',
+      stageOutput: '4. 다음 글자 확률',
+      tokensLegend: '토큰 고르기 (누르면 그 토큰의 숫자 목록과 어텐션 행을 보여 줍니다)',
+      unknownNote:
+        '␀ 는 학습 때 보지 못한 글자입니다. 아래 숫자 아이디는 어휘 사전에서의 번호입니다.',
+      embeddingNote: (dModel) =>
+        `토큰마다 숫자 ${dModel}개. 파랑은 음수, 빨강은 양수, 회색은 0 근처입니다. 고른 토큰의 행은 테두리로 표시됩니다.`,
+      vectorHeading: (token) => `"${token}" 의 숫자 목록`,
+      layerLabel: '층',
+      headLabel: '헤드',
+      layerOption: (index) => `${index + 1}층`,
+      headOption: (index) => `헤드 ${index + 1}`,
+      attentionCaption: (layer, head) =>
+        `${layer + 1}층 헤드 ${head + 1} 어텐션 (행: 보는 글자, 열: 보이는 글자)`,
+      cellTitle: (from, to, weight) => `"${from}" → "${to}": ${weight}`,
+      strongest: (from, to, weight) =>
+        `"${from}" 행에서 가장 큰 가중치는 "${to}" (${weight}) 입니다.`,
+      temperatureLabel: '온도',
+      probabilityCaption: '다음 글자 후보 상위 10개',
+      columns: { token: '다음 글자', probability: '확률' },
+      appendOne: '한 글자 뽑아 붙이기',
+      appendMany: '10글자 이어 쓰기',
+      reset: '처음으로',
+      modelNote: (paramCount, layers, heads, corpusChars) =>
+        `이 모델은 scripts/train_tiny_model.py 가 이 페이지의 한국어·영어 본문 ${corpusChars.toLocaleString()}글자로 학습한 문자 단위 트랜스포머입니다 (${layers}층 × ${heads}헤드, 파라미터 ${paramCount.toLocaleString()}개). 구조는 GPT-2 와 같은 계열이지만 크기가 수천 배 작아서, 본문과 비슷한 글에서만 그럴듯하게 이어 씁니다.`,
+      defaultText: '은행에 가서 돈을',
+    },
+    readMore: '자세히 읽기',
     sourcesTitle: '참고 자료',
   },
 
@@ -378,6 +415,21 @@ export const ko: LocalePack = {
   ],
 
   sections: {
+    playground: {
+      title: '직접 넣어 보기',
+      shortTitle: '직접 넣어 보기',
+      tagline: '글을 넣으면 이 페이지 안의 작은 트랜스포머가 실제로 계산해 보여 줍니다.',
+      analogy:
+        '실제 부품으로 만든 축소 모형입니다. 진짜 자동차처럼 멀리 달리지는 못해도, 바퀴가 어떻게 도는지는 정확히 보여 줍니다.',
+      executive: [
+        '글을 바꾸면 네 단계(토큰, 임베딩, 어텐션, 다음 글자 확률)가 모두 다시 계산됩니다. 각 단계의 뜻은 아래 섹션에서 차례로 설명합니다.',
+      ],
+      engineer: [
+        '모델은 문자 단위 디코더 전용 트랜스포머입니다(pre-LN, 학습된 위치 임베딩, ReLU 피드포워드, 임베딩과 출력층 가중치 공유). 학습 스크립트와 가중치는 저장소의 scripts/train_tiny_model.py 와 src/data/model/tiny-transformer.json 에 있고, TypeScript 구현(src/lib/tinyTransformer.ts)이 학습 코드와 같은 확률·어텐션을 내는지 테스트가 검사합니다.',
+      ],
+      status: 'ready',
+    },
+
     intro: {
       title: '트랜스포머, 한 문장으로',
       shortTitle: '한 문장 요약',

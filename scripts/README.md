@@ -46,3 +46,19 @@ python scripts/precompute_attention.py --locale ko --model <한국어 GPT-2 계�
 ```
 
 `src/lib/attentionData.ts` 가 이 형식을 검사한다. 형식이 맞지 않으면 빌드 시 오류 대신 화면 안내문이 나온다.
+
+# 내장 소형 모델 학습 (train_tiny_model.py)
+
+"직접 넣어 보기" 데모는 `src/data/model/tiny-transformer.json` 의 가중치를 브라우저에서 직접 실행한다.
+이 파일은 `scripts/train_tiny_model.py` 가 페이지 본문(`src/content/ko.ts`, `en.ts` 의 문자열과 `scripts/examples.json`)으로
+문자 단위 트랜스포머(3층 × 3헤드, d_model 48, 문맥 64)를 학습해 만든다. 손으로 만들거나 고치지 않는다.
+
+```bash
+pip install -r scripts/requirements-train.txt   # jax, numpy (CPU)
+python scripts/train_tiny_model.py                # 몇 분. 손실과 이어 쓰기 예가 출력된다
+npm test                                          # tinyTransformer.test.ts 가 파일의 reference 값과 대조
+```
+
+- 파일에는 fp16 가중치(base64), 어휘, 학습 기록, 그리고 TypeScript 구현 검증용 기준값(`reference`)이 들어 있다.
+- 모델 구조를 바꾸면 `src/lib/tinyTransformer.ts` 의 forward 도 같은 순서로 바꿔야 한다.
+- 이 세션에서는 이 스크립트를 실제로 실행해 파일을 만들었다 (Hugging Face 접속이 필요 없으므로 원격 환경에서도 가능).

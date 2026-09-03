@@ -126,3 +126,23 @@ test('실제 값 데이터가 없으면 어텐션 히트맵과 헤드 비교 자
   await expect(page.getByTestId('multihead-empty')).toBeVisible()
   await expect(page.getByText('실제 값 데이터가 아직 없습니다')).toHaveCount(2)
 })
+
+test('직접 넣어 보기: 글을 바꾸면 토큰과 확률이 다시 계산되고 이어 쓰기가 동작한다', async ({
+  page,
+}) => {
+  await page.goto('/')
+  const pipeline = page.getByTestId('live-pipeline')
+  const input = pipeline.getByRole('textbox')
+  await expect(
+    pipeline.getByRole('group', { name: /토큰 고르기/ }).getByRole('button'),
+  ).toHaveCount(9)
+  await input.fill('트랜스포머는')
+  await expect(
+    pipeline.getByRole('group', { name: /토큰 고르기/ }).getByRole('button'),
+  ).toHaveCount(6)
+  await expect(pipeline.getByText('6 / 64 글자')).toBeVisible()
+  await pipeline.getByRole('button', { name: '10글자 이어 쓰기' }).click()
+  await expect(input).toHaveValue(/^트랜스포머는.{10}$/s)
+  await pipeline.getByRole('button', { name: '처음으로' }).click()
+  await expect(input).toHaveValue('은행에 가서 돈을')
+})

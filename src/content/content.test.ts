@@ -165,3 +165,12 @@ describe('real-value heatmap strings', () => {
     expect(ko.ui.heatmap.modelNote('gpt2', '2026-01-01')).toContain('gpt2')
   })
 })
+
+describe('playground section', () => {
+  it('첫 섹션이 직접 넣어 보기이고 실시간 파이프라인 데모가 붙어 있다', () => {
+    expect(ko.sections[0].id).toBe('playground')
+    expect(ko.sections[0].interactives).toEqual(['pipeline'])
+    expect(ko.ui.pipeline.charCount(3, 64)).toBe('3 / 64 글자')
+    expect(en.ui.pipeline.modelNote(114528, 3, 3, 34279)).toContain('114,528')
+  })
+})

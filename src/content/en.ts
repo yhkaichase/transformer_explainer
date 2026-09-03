@@ -338,6 +338,43 @@ export const en: LocalePack = {
         'The heads of one layer look at the same sentence in different ways. Click a small picture to choose a head and see it enlarged below.',
       thumbsLabel: 'Heads',
     },
+    pipeline: {
+      heading: 'Try it live: change the text and the model computes',
+      description:
+        'Edit the text below and the tokens, embeddings, attention, and next-character probabilities are all recomputed. A small model embedded in this page runs directly in your browser. No server and no internet needed.',
+      inputLabel: 'Input text',
+      charCount: (count, max) => `${count} / ${max} characters`,
+      emptyInput: 'Type at least one character.',
+      stageTokens: '1. Tokens: one character is one token',
+      stageEmbeddings: '2. Embedding + position: a list of numbers per token',
+      stageAttention: '3. Attention: who looks at whom',
+      stageOutput: '4. Next-character probabilities',
+      tokensLegend: 'Pick a token (shows its numbers and its attention row)',
+      unknownNote:
+        '␀ marks a character the model never saw in training. The number under each token is its id in the vocabulary.',
+      embeddingNote: (dModel) =>
+        `${dModel} numbers per token. Blue is negative, red is positive, gray is near 0. The row of the chosen token is outlined.`,
+      vectorHeading: (token) => `Numbers for "${token}"`,
+      layerLabel: 'Layer',
+      headLabel: 'Head',
+      layerOption: (index) => `Layer ${index + 1}`,
+      headOption: (index) => `Head ${index + 1}`,
+      attentionCaption: (layer, head) =>
+        `Attention of layer ${layer + 1}, head ${head + 1} (rows: looking character, columns: looked-at character)`,
+      cellTitle: (from, to, weight) => `"${from}" → "${to}": ${weight}`,
+      strongest: (from, to, weight) =>
+        `In the row for "${from}", the largest weight is on "${to}" (${weight}).`,
+      temperatureLabel: 'Temperature',
+      probabilityCaption: 'Top 10 candidates for the next character',
+      columns: { token: 'Next character', probability: 'Probability' },
+      appendOne: 'Draw one character and append',
+      appendMany: 'Continue for 10 characters',
+      reset: 'Reset',
+      modelNote: (paramCount, layers, heads, corpusChars) =>
+        `This model is a character-level transformer trained by scripts/train_tiny_model.py on the ${corpusChars.toLocaleString()} characters of Korean and English text of this page (${layers} layers × ${heads} heads, ${paramCount.toLocaleString()} parameters). Its architecture is in the GPT-2 family, but it is thousands of times smaller, so it continues text plausibly only when the text resembles this page.`,
+      defaultText: 'I went to the bank to',
+    },
+    readMore: 'Read more',
     sourcesTitle: 'References',
   },
 
@@ -390,6 +427,22 @@ export const en: LocalePack = {
   ],
 
   sections: {
+    playground: {
+      title: 'Try it live',
+      shortTitle: 'Try it live',
+      tagline:
+        'Type some text and the small transformer inside this page computes the result for real.',
+      analogy:
+        'It is a scale model built from real parts. It cannot drive far like a real car, but it shows exactly how the wheels turn.',
+      executive: [
+        'Change the text and all four stages (tokens, embedding, attention, next-character probabilities) are recomputed. The sections below explain each stage in turn.',
+      ],
+      engineer: [
+        'The model is a character-level decoder-only transformer (pre-LN, learned position embeddings, ReLU feed-forward, output layer tied to the embedding). The training script and weights are in scripts/train_tiny_model.py and src/data/model/tiny-transformer.json, and tests check that the TypeScript implementation (src/lib/tinyTransformer.ts) produces the same probabilities and attention as the training code.',
+      ],
+      status: 'ready',
+    },
+
     intro: {
       title: 'The Transformer in one sentence',
       shortTitle: 'One sentence',

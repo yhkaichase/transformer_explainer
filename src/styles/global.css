@@ -1509,18 +1509,25 @@ textarea {
 }
 
 .attn-heatmap thead th {
-  height: 72px;
   vertical-align: bottom;
+  text-align: center;
+}
+
+.attn-heatmap thead th.attn-col-vertical {
+  height: 72px;
 }
 
 .attn-col-label {
   display: inline-block;
+  white-space: nowrap;
+}
+
+.attn-col-vertical .attn-col-label {
   max-height: 68px;
   writing-mode: vertical-rl;
   transform: rotate(180deg);
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .attn-heatmap tbody th {
@@ -1649,4 +1656,119 @@ textarea {
 .mini-heatmap span {
   display: block;
   border-radius: 1px;
+}
+
+/* ------------------------------------------------------------------
+   직접 넣어 보기 (실시간 파이프라인)
+------------------------------------------------------------------ */
+.pipeline-input-label {
+  display: block;
+  margin: 4px 0 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.pipeline-stage {
+  margin: 14px 0 0;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border);
+}
+
+.pipeline-stage h4 {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+}
+
+.token-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.token-chip {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 30px;
+  padding: 3px 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--token-word);
+  color: inherit;
+  font: inherit;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.token-chip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.token-chip.is-active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.token-chip.is-unknown {
+  background: var(--token-punct);
+}
+
+.token-chip-char {
+  font-weight: 600;
+}
+
+.token-chip-id {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.emb-grid {
+  display: grid;
+  gap: 1px;
+  margin: 4px 0 6px;
+}
+
+.emb-cell {
+  height: 7px;
+  border-radius: 1px;
+}
+
+.emb-cell.is-selected {
+  box-shadow: inset 0 0 0 1px var(--text);
+}
+
+.live-pipeline .vector-print strong {
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    'Noto Sans KR',
+    'Apple SD Gothic Neo',
+    'Malgun Gothic',
+    Roboto,
+    sans-serif;
+  color: var(--text);
+}
+
+.live-pipeline .prob-table tbody th .token {
+  padding: 1px 8px;
+}
+
+/* 본문 문단 접기: 임원용에서는 접혀 있고 엔지니어용에서는 펼쳐진다 */
+.section-text {
+  margin: 4px 0 8px;
+}
+
+.section-text summary {
+  margin: 0 0 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.section-text[open] summary {
+  margin-bottom: 8px;
 }

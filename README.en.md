@@ -7,6 +7,7 @@ An interactive web page that explains the **Transformer**, the architecture behi
 - **Executive** mode: analogies and outcomes, no equations.
 - **Engineer** mode: the same page gains equations and structural detail.
 - **한국어 / English**: switch with the toggle at the top, or open the English version directly with `?lang=en`.
+- **Try it live**: at the top of the page, edit the text and a small transformer embedded in the page (character-level, 3 layers, about 115k parameters) computes tokens → embeddings → attention → next-character probabilities in the browser. No server or internet needed.
 
 Where the reference project [Transformer Explainer](https://github.com/poloclub/transformer-explainer) (Georgia Tech Polo Club) runs a real GPT-2 in the browser and shows its internals, this project aims one step simpler. The content plan is in [docs/plan.md](docs/plan.md) (Korean).
 
@@ -58,6 +59,16 @@ docs/plan.md     Content plan and open questions (Korean)
 ```
 
 Both languages must always be edited together: a change to `ko.ts` needs the matching change in `en.ts`, and a unit test checks that paragraph and key-term counts stay equal.
+
+## Retraining the embedded small model
+
+The model behind "Try it live" is trained by `scripts/train_tiny_model.py` on this page's Korean and English text. Retrain it after large text changes or to change the model size (a few minutes on CPU).
+
+```bash
+pip install -r scripts/requirements-train.txt
+python scripts/train_tiny_model.py
+npm test   # checks that the TypeScript implementation matches the new reference values
+```
 
 ## Generating the real attention values
 

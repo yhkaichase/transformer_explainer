@@ -17,9 +17,11 @@ export type InteractiveKind =
   | 'stack'
   | 'training'
   | 'summary'
+  | 'pipeline'
 
 /** 섹션 식별자. URL 해시와 DOM id 로 쓰인다. 순서는 structure.ts 가 정한다. */
 export type SectionId =
+  | 'playground'
   | 'intro'
   | 'tokens'
   | 'position'
@@ -262,6 +264,38 @@ export interface UiStrings {
     description: string
     thumbsLabel: string
   }
+  pipeline: {
+    heading: string
+    description: string
+    inputLabel: string
+    charCount: (count: number, max: number) => string
+    emptyInput: string
+    stageTokens: string
+    stageEmbeddings: string
+    stageAttention: string
+    stageOutput: string
+    tokensLegend: string
+    unknownNote: string
+    embeddingNote: (dModel: number) => string
+    vectorHeading: (token: string) => string
+    layerLabel: string
+    headLabel: string
+    layerOption: (index: number) => string
+    headOption: (index: number) => string
+    attentionCaption: (layer: number, head: number) => string
+    cellTitle: (from: string, to: string, weight: string) => string
+    strongest: (from: string, to: string, weight: string) => string
+    temperatureLabel: string
+    probabilityCaption: string
+    columns: { token: string; probability: string }
+    appendOne: string
+    appendMany: string
+    reset: string
+    modelNote: (paramCount: number, layers: number, heads: number, corpusChars: number) => string
+    defaultText: string
+  }
+  /** 접힌 본문 문단을 펼치는 버튼 문구 */
+  readMore: string
   sourcesTitle: string
 }
 

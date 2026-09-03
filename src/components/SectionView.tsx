@@ -8,6 +8,7 @@ import { Callout } from './Callout'
 import { FeedForwardDemo } from './FeedForwardDemo'
 import { FlowDiagram } from './FlowDiagram'
 import { LayerStackDemo } from './LayerStackDemo'
+import { LivePipeline } from './LivePipeline'
 import { MultiHeadDemo } from './MultiHeadDemo'
 import { PositionalEncodingDemo } from './PositionalEncodingDemo'
 import { TemperatureDemo } from './TemperatureDemo'
@@ -27,6 +28,7 @@ const INTERACTIVES: Record<InteractiveKind, ComponentType> = {
   stack: LayerStackDemo,
   training: TrainingDemo,
   summary: SummaryCard,
+  pipeline: LivePipeline,
 }
 
 export function SectionView({ section }: { section: Section }) {
@@ -48,9 +50,12 @@ export function SectionView({ section }: { section: Section }) {
         <p>{section.analogy}</p>
       </Callout>
 
-      {section.executive.map((paragraph, i) => (
-        <p key={i}>{paragraph}</p>
-      ))}
+      <details className="section-text" open={audience === 'engineer'}>
+        <summary>{content.ui.readMore}</summary>
+        {section.executive.map((paragraph, i) => (
+          <p key={i}>{paragraph}</p>
+        ))}
+      </details>
 
       {interactives.map((kind) => {
         const Interactive = INTERACTIVES[kind]

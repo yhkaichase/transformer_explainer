@@ -7,6 +7,7 @@ ChatGPT 같은 AI 의 핵심 구조인 **트랜스포머(Transformer)** 를 주�
 - **임원용** 모드: 수식 없이 비유와 결과 중심으로 읽습니다.
 - **엔지니어용** 모드: 같은 페이지에서 수식과 구조 설명이 추가됩니다.
 - **한국어 / English**: 상단 토글로 바꾸거나, `?lang=en` 을 붙인 주소로 영어 버전을 바로 열 수 있습니다.
+- **직접 넣어 보기**: 맨 위에서 글을 바꾸면 페이지 안에 내장된 작은 트랜스포머(문자 단위, 3층, 파라미터 약 11만 개)가 브라우저에서 토큰 → 임베딩 → 어텐션 → 다음 글자 확률을 실제로 계산합니다. 서버나 인터넷이 필요 없습니다.
 
 참고 프로젝트 [Transformer Explainer](https://github.com/poloclub/transformer-explainer)(Georgia Tech Polo Club)가 브라우저에서 실제 GPT-2 를 실행하며 내부를 보여 준다면, 이 프로젝트는 그보다 한 단계 쉬운 설명을 목표로 합니다. 자세한 계획은 [docs/plan.md](docs/plan.md) 에 있습니다.
 
@@ -55,6 +56,16 @@ src/lib/         softmax, 어텐션 등 순수 계산 함수 (테스트 포함)
 src/state/       설명 수준(임원용/엔지니어용) 상태
 e2e/             Playwright 스모크 테스트
 docs/plan.md     콘텐츠 계획과 열린 질문
+```
+
+## 내장 소형 모델 다시 학습하기
+
+"직접 넣어 보기" 데모의 모델은 `scripts/train_tiny_model.py` 가 이 페이지의 한국어·영어 본문으로 학습한 것입니다. 본문을 크게 바꿨거나 모델 크기를 바꾸고 싶을 때 다시 학습합니다 (CPU 로 몇 분).
+
+```bash
+pip install -r scripts/requirements-train.txt
+python scripts/train_tiny_model.py
+npm test   # TypeScript 구현이 새 가중치의 기준값과 일치하는지 확인
 ```
 
 ## 실제 어텐션 값 만들기

@@ -20,6 +20,8 @@ export function HeatmapTable({
   onSelectRow,
   cellTitle,
 }: HeatmapTableProps) {
+  // 글자 단위 토큰처럼 라벨이 짧으면 가로로, BPE 조각처럼 길면 세로로 쓴다.
+  const vertical = tokens.some((token) => Array.from(displayToken(token)).length > 2)
   return (
     <div className="heatmap-wrap">
       <table className="attn-heatmap">
@@ -28,7 +30,7 @@ export function HeatmapTable({
           <tr>
             <td />
             {tokens.map((token, k) => (
-              <th key={k} scope="col">
+              <th key={k} scope="col" className={vertical ? 'attn-col-vertical' : undefined}>
                 <span className="attn-col-label">{displayToken(token)}</span>
               </th>
             ))}
