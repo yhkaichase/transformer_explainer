@@ -19,6 +19,14 @@ npm install
 npm run dev        # http://localhost:5173
 ```
 
+## Viewing without Node.js
+
+The page is a static site: a browser is all you need to view it. Node.js is required only to build it.
+
+- **Open a single file**: `npm run build && npm run build:single` produces `dist/transformer-explain.html` with all CSS and JS inlined. It opens by double-click and can be shared over an intranet or by email. Append `?lang=en` to the file address for English.
+- **Download the build**: every push makes the CI workflow upload a `site` artifact (the build folder plus the single file). Find it under the repository's Actions tab → the run → Artifacts.
+- **Share a link**: enable GitHub Pages as described under "Deployment"; the same address with `/transformer-explain.html` appended serves the offline single file.
+
 ## Scripts
 
 | Command           | What it does                                               |

@@ -35,6 +35,10 @@ jobs:
         env:
           BASE_PATH: /${{ github.event.repository.name }}/
 
+      # 배포된 사이트에서 /transformer-explain.html 로 오프라인용 단일 파일도 받을 수 있게 한다.
+      - name: Build single-file HTML
+        run: npm run build:single
+
       - uses: actions/configure-pages@v6
 
       - uses: actions/upload-pages-artifact@v5

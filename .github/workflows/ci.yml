@@ -50,3 +50,15 @@ jobs:
           name: playwright-report
           path: playwright-report
           retention-days: 7
+
+      # Node.js 없이 페이지를 볼 수 있게 빌드 결과를 내려받을 수 있는 파일로 남긴다.
+      # Actions 실행 페이지의 Artifacts 에서 "site" 를 받아 transformer-explain.html 을 열면 된다.
+      - name: Build single-file HTML
+        run: npm run build:single
+
+      - name: Upload site build (dist + single-file HTML)
+        uses: actions/upload-artifact@v7
+        with:
+          name: site
+          path: dist
+          retention-days: 30

@@ -19,6 +19,14 @@ npm install
 npm run dev        # http://localhost:5173
 ```
 
+## Node.js 없이 보기
+
+페이지는 정적 파일이라 보는 데는 브라우저만 있으면 됩니다. Node.js 는 빌드할 때만 필요합니다.
+
+- **파일 하나로 열기**: `npm run build && npm run build:single` 을 실행하면 `dist/transformer-explain.html` 이 생깁니다. CSS 와 JS 가 모두 들어 있어 더블클릭으로 열리고, 인트라넷이나 메일로 전달할 수 있습니다. 영어는 파일 주소 뒤에 `?lang=en` 을 붙입니다.
+- **빌드 결과 내려받기**: 푸시할 때마다 GitHub Actions 의 CI 가 `site` 아티팩트(빌드 폴더 전체와 위 단일 파일)를 남깁니다. 저장소 Actions 탭 → 해당 실행 → Artifacts 에서 받을 수 있습니다.
+- **링크로 공유하기**: 아래 "배포" 대로 GitHub Pages 를 켜면 주소 하나로 공유할 수 있고, 같은 주소 뒤에 `/transformer-explain.html` 을 붙이면 오프라인용 단일 파일을 받을 수 있습니다.
+
 ## 스크립트
 
 | 명령              | 설명                                                    |
