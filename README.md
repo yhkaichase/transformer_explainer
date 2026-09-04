@@ -20,11 +20,16 @@ npm install
 npm run dev        # http://localhost:5173
 ```
 
+## 시뮬레이터 (transformer-simulator.html)
+
+설명 글 없이 구조만 보고 싶을 때 쓰는 두 번째 페이지입니다. 개발 서버에서는 `http://localhost:5173/simulator.html`, 빌드 뒤에는 `dist/simulator.html`, 단일 파일은 `dist/transformer-simulator.html` 입니다.
+입력 → 임베딩 → (층) LayerNorm → W_Q·W_K·W_V → 헤드별 어텐션 → W_O → 잔차 → LayerNorm → W₁ → ReLU → W₂ → 잔차 → 최종 LayerNorm → 로짓 → softmax → 다음 토큰을 한 화면에 가로로 펼치고, 실제 가중치 행렬과 활성값을 히트맵으로 그립니다. 단계 스테퍼(← → 키)로 흐름을 따라가고, Prefill(프롬프트 전체 병렬 계산)과 Decode(새 토큰 1개, K·V 캐시 재사용)를 구분해 표시합니다.
+
 ## Node.js 없이 보기
 
 페이지는 정적 파일이라 보는 데는 브라우저만 있으면 됩니다. Node.js 는 빌드할 때만 필요합니다.
 
-- **파일 하나로 열기**: `npm run build && npm run build:single` 을 실행하면 `dist/transformer-explain.html` 이 생깁니다. CSS 와 JS 가 모두 들어 있어 더블클릭으로 열리고, 인트라넷이나 메일로 전달할 수 있습니다. 영어는 파일 주소 뒤에 `?lang=en` 을 붙입니다.
+- **파일 하나로 열기**: `npm run build && npm run build:single` 을 실행하면 `dist/transformer-explain.html`(설명 페이지)과 `dist/transformer-simulator.html`(시뮬레이터)이 생깁니다. CSS 와 JS 가 모두 들어 있어 더블클릭으로 열리고, 인트라넷이나 메일로 전달할 수 있습니다. 영어는 파일 주소 뒤에 `?lang=en` 을 붙입니다.
 - **빌드 결과 내려받기**: 푸시할 때마다 GitHub Actions 의 CI 가 `site` 아티팩트(빌드 폴더 전체와 위 단일 파일)를 남깁니다. 저장소 Actions 탭 → 해당 실행 → Artifacts 에서 받을 수 있습니다.
 - **링크로 공유하기**: 아래 "배포" 대로 GitHub Pages 를 켜면 주소 하나로 공유할 수 있고, 같은 주소 뒤에 `/transformer-explain.html` 을 붙이면 오프라인용 단일 파일을 받을 수 있습니다.
 

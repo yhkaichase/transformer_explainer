@@ -91,6 +91,62 @@ export interface Candidate {
   probability: number
 }
 
+/** 한 층의 중간 활성값. 행렬은 모두 행 우선(T × 열 수)의 Float32Array. */
+export interface LayerTrace {
+  /** LayerNorm₁ 출력 (T × d_model) */
+  ln1: Float32Array
+  q: Float32Array
+  k: Float32Array
+  v: Float32Array
+  /** [헤드][보는 토큰][보이는 토큰] */
+  attentions: number[][][]
+  /** 헤드별 가중합을 이어 붙인 것 (T × d_model) */
+  headsConcat: Float32Array
+  /** W_O 투영 결과 (T × d_model) */
+  projected: Float32Array
+  /** 어텐션 잔차 더하기 뒤의 x (T × d_model) */
+  residual1: Float32Array
+  ln2: Float32Array
+  /** W₁ 적용 결과, ReLU 전 (T × d_ff) */
+  ffnPre: Float32Array
+  /** ReLU 뒤 (T × d_ff) */
+  ffnHidden: Float32Array
+  /** W₂ 적용 결과 (T × d_model) */
+  ffnOut: Float32Array
+  /** 피드포워드 잔차 더하기 뒤의 x = 이 층의 출력 (T × d_model) */
+  residual2: Float32Array
+}
+
+export interface TraceResult extends ForwardResult {
+  /** 토큰 임베딩만 (T × d_model) */
+  tokenEmbeddings: Float32Array[]
+  /** 위치 임베딩만 (T × d_model) */
+  positionEmbeddings: Float32Array[]
+  layers: LayerTrace[]
+  /** 최종 LayerNorm 출력 (T × d_model) */
+  final: Float32Array
+}
+
+/** 디코딩된 한 층의 가중치 (행 우선). */
+export interface LayerWeights {
+  ln1G: Float32Array
+  ln1B: Float32Array
+  wq: Float32Array
+  bq: Float32Array
+  wk: Float32Array
+  bk: Float32Array
+  wv: Float32Array
+  bv: Float32Array
+  wo: Float32Array
+  bo: Float32Array
+  ln2G: Float32Array
+  ln2B: Float32Array
+  w1: Float32Array
+  b1: Float32Array
+  w2: Float32Array
+  b2: Float32Array
+}
+
 function decodeBase64(data: string): Uint8Array {
   const binary = atob(data)
   const bytes = new Uint8Array(binary.length)
@@ -117,25 +173,6 @@ export function decodeTensor(record: TensorRecord): Float32Array {
   const expected = record.shape.reduce((a, b) => a * b, 1)
   if (expected !== count) throw new Error(`텐서 크기가 맞지 않습니다: ${expected} vs ${count}`)
   return out
-}
-
-interface DecodedLayer {
-  ln1G: Float32Array
-  ln1B: Float32Array
-  wq: Float32Array
-  bq: Float32Array
-  wk: Float32Array
-  bk: Float32Array
-  wv: Float32Array
-  bv: Float32Array
-  wo: Float32Array
-  bo: Float32Array
-  ln2G: Float32Array
-  ln2B: Float32Array
-  w1: Float32Array
-  b1: Float32Array
-  w2: Float32Array
-  b2: Float32Array
 }
 
 /** rows×k 행렬 a 에 k×n 행렬 w 를 곱하고 편향 b 를 더한다. */
@@ -190,7 +227,7 @@ export class TinyTransformer {
   private readonly posEmb: Float32Array
   private readonly lnfG: Float32Array
   private readonly lnfB: Float32Array
-  private readonly layers: DecodedLayer[]
+  private readonly layers: LayerWeights[]
 
   constructor(file: TinyModelFile) {
     if (file.schemaVersion !== 1)
@@ -235,7 +272,37 @@ export class TinyTransformer {
     return ids.map((id) => this.vocab[id] ?? this.unkToken).join('')
   }
 
+  /** 층별 가중치 (디코딩된 Float32Array, 행 우선). 시각화용. */
+  layerWeights(layer: number): LayerWeights {
+    return this.layers[layer]
+  }
+
+  /** 토큰 임베딩 행렬 (어휘 수 × d_model). 출력층과 가중치를 공유한다. */
+  get tokenEmbedding(): Float32Array {
+    return this.tokEmb
+  }
+
+  get positionEmbedding(): Float32Array {
+    return this.posEmb
+  }
+
+  get finalNorm(): { g: Float32Array; b: Float32Array } {
+    return { g: this.lnfG, b: this.lnfB }
+  }
+
   forward(ids: number[]): ForwardResult {
+    const trace = this.forwardTrace(ids)
+    return {
+      ids: trace.ids,
+      tokens: trace.tokens,
+      embeddings: trace.embeddings,
+      attentions: trace.attentions,
+      logits: trace.logits,
+    }
+  }
+
+  /** forward 와 같은 계산을 하되 모든 중간 활성값을 함께 돌려준다. */
+  forwardTrace(ids: number[]): TraceResult {
     const { dModel: d, nHeads: h, nLayers, dFf, context, layerNormEps: eps } = this.config
     const t = ids.length
     if (t === 0) throw new RangeError('토큰이 하나 이상 필요합니다.')
@@ -249,7 +316,14 @@ export class TinyTransformer {
         x[i * d + j] = this.tokEmb[ids[i] * d + j] + this.posEmb[i * d + j]
     }
     const embeddings = Array.from({ length: t }, (_, i) => x.slice(i * d, (i + 1) * d))
+    const tokenEmbeddings = Array.from({ length: t }, (_, i) =>
+      this.tokEmb.slice(ids[i] * d, (ids[i] + 1) * d),
+    )
+    const positionEmbeddings = Array.from({ length: t }, (_, i) =>
+      this.posEmb.slice(i * d, (i + 1) * d),
+    )
     const attentions: number[][][][] = []
+    const layers: LayerTrace[] = []
 
     for (let l = 0; l < nLayers; l++) {
       const layer = this.layers[l]
@@ -284,12 +358,30 @@ export class TinyTransformer {
       attentions.push(layerAttention)
       const projected = matmulAdd(concat, t, d, layer.wo, d, layer.bo)
       for (let i = 0; i < t * d; i++) x[i] += projected[i]
+      const residual1 = x.slice()
 
       const hn2 = layerNormRows(x, t, d, layer.ln2G, layer.ln2B, eps)
-      const hidden = matmulAdd(hn2, t, d, layer.w1, dFf, layer.b1)
-      for (let i = 0; i < hidden.length; i++) if (hidden[i] < 0) hidden[i] = 0
-      const ff = matmulAdd(hidden, t, dFf, layer.w2, d, layer.b2)
-      for (let i = 0; i < t * d; i++) x[i] += ff[i]
+      const ffnPre = matmulAdd(hn2, t, d, layer.w1, dFf, layer.b1)
+      const ffnHidden = ffnPre.slice()
+      for (let i = 0; i < ffnHidden.length; i++) if (ffnHidden[i] < 0) ffnHidden[i] = 0
+      const ffnOut = matmulAdd(ffnHidden, t, dFf, layer.w2, d, layer.b2)
+      for (let i = 0; i < t * d; i++) x[i] += ffnOut[i]
+
+      layers.push({
+        ln1: hn,
+        q,
+        k,
+        v,
+        attentions: layerAttention,
+        headsConcat: concat,
+        projected,
+        residual1,
+        ln2: hn2,
+        ffnPre,
+        ffnHidden,
+        ffnOut,
+        residual2: x.slice(),
+      })
     }
 
     const final = layerNormRows(x, t, d, this.lnfG, this.lnfB, eps)
@@ -302,7 +394,17 @@ export class TinyTransformer {
       logits[vIndex] = sum
     }
 
-    return { ids, tokens: ids.map((id) => this.vocab[id]), embeddings, attentions, logits }
+    return {
+      ids,
+      tokens: ids.map((id) => this.vocab[id]),
+      embeddings,
+      tokenEmbeddings,
+      positionEmbeddings,
+      attentions,
+      logits,
+      layers,
+      final,
+    }
   }
 
   /** 마지막 위치의 다음 글자 확률 (온도 적용, 확률 내림차순). ␀ 는 뽑히지 않게 0 으로 둔다. */

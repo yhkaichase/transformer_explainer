@@ -88,3 +88,47 @@ describe('TinyTransformer', () => {
     expect(model.vocab[0]).toBe(model.unkToken)
   })
 })
+
+describe('forwardTrace', () => {
+  it('중간 활성값의 크기가 맞고, forward 와 같은 로짓과 어텐션을 낸다', () => {
+    const ids = model.encode('은행에 가서')
+    const t = ids.length
+    const { dModel, dFf, nLayers, nHeads } = model.config
+    const trace = model.forwardTrace(ids)
+    const plain = model.forward(ids)
+    expect(trace.layers).toHaveLength(nLayers)
+    for (const layer of trace.layers) {
+      expect(layer.ln1).toHaveLength(t * dModel)
+      expect(layer.q).toHaveLength(t * dModel)
+      expect(layer.attentions).toHaveLength(nHeads)
+      expect(layer.headsConcat).toHaveLength(t * dModel)
+      expect(layer.ffnPre).toHaveLength(t * dFf)
+      expect(layer.ffnHidden.every((value, i) => value === Math.max(0, layer.ffnPre[i]))).toBe(true)
+      expect(layer.residual2).toHaveLength(t * dModel)
+    }
+    expect(trace.final).toHaveLength(t * dModel)
+    expect(Array.from(trace.logits)).toEqual(Array.from(plain.logits))
+    expect(trace.attentions).toEqual(plain.attentions)
+    // 잔차: residual1 = 입력 x + projected, residual2 = residual1 + ffnOut (첫 층)
+    const first = trace.layers[0]
+    for (let i = 0; i < 5; i++) {
+      expect(first.residual1[i]).toBeCloseTo(trace.embeddings[0][i] + first.projected[i], 5)
+      expect(first.residual2[i]).toBeCloseTo(first.residual1[i] + first.ffnOut[i], 5)
+    }
+    // 임베딩 = 토큰 임베딩 + 위치 임베딩
+    expect(trace.embeddings[1][3]).toBeCloseTo(
+      trace.tokenEmbeddings[1][3] + trace.positionEmbeddings[1][3],
+      6,
+    )
+  })
+
+  it('가중치 접근자는 올바른 크기의 행렬을 돌려준다', () => {
+    const { dModel, dFf } = model.config
+    const w = model.layerWeights(0)
+    expect(w.wq).toHaveLength(dModel * dModel)
+    expect(w.w1).toHaveLength(dModel * dFf)
+    expect(w.w2).toHaveLength(dFf * dModel)
+    expect(model.tokenEmbedding).toHaveLength(model.vocab.length * dModel)
+    expect(model.finalNorm.g).toHaveLength(dModel)
+  })
+})

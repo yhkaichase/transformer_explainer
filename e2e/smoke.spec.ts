@@ -146,3 +146,24 @@ test('직접 넣어 보기: 글을 바꾸면 토큰과 확률이 다시 계산�
   await pipeline.getByRole('button', { name: '처음으로' }).click()
   await expect(input).toHaveValue('은행에 가서 돈을')
 })
+
+test('시뮬레이터 페이지: 단계 이동, decode, 캔버스가 그려진다', async ({ page }) => {
+  await page.goto('/simulator.html')
+  await expect(page).toHaveTitle(/Transformer Simulator/)
+  await expect(page.getByText('Prefill · 프롬프트 토큰 전체를 한 번에 계산')).toBeVisible()
+  const diagram = page.getByTestId('sim-diagram')
+  await expect(diagram.locator('canvas').first()).toBeVisible()
+  const canvasCount = await diagram.locator('canvas').count()
+  expect(canvasCount).toBeGreaterThan(15)
+
+  await page.keyboard.press('ArrowRight')
+  await expect(page.locator('button[aria-current="step"]')).toContainText('임베딩')
+  await page.getByRole('button', { name: /W_Q · W_K · W_V/ }).click()
+  await expect(page.locator('.sim-formula code')).toContainText('W_Q')
+
+  await page.getByRole('button', { name: 'Decode: 다음 토큰' }).click()
+  await expect(page.getByText(/Decode 1 · 새 토큰 1개만 계산/)).toBeVisible()
+  await expect(page.locator('.sim-badge')).toHaveText('새 토큰')
+  await page.getByRole('button', { name: '처음으로' }).click()
+  await expect(page.getByText('Prefill · 프롬프트 토큰 전체를 한 번에 계산')).toBeVisible()
+})

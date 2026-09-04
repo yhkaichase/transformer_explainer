@@ -20,11 +20,16 @@ npm install
 npm run dev        # http://localhost:5173
 ```
 
+## Simulator (transformer-simulator.html)
+
+A second page for looking at the structure without explanatory text: `http://localhost:5173/simulator.html` on the dev server, `dist/simulator.html` after a build, or the single file `dist/transformer-simulator.html`.
+It lays out input → embedding → (layer) LayerNorm → W_Q·W_K·W_V → per-head attention → W_O → residual → LayerNorm → W₁ → ReLU → W₂ → residual → final LayerNorm → logits → softmax → next token horizontally on one screen, drawing the real weight matrices and activations as heatmaps. A stage stepper (← → keys) walks through the flow, and Prefill (all prompt tokens in parallel) is distinguished from Decode (one new token, cached K·V reused).
+
 ## Viewing without Node.js
 
 The page is a static site: a browser is all you need to view it. Node.js is required only to build it.
 
-- **Open a single file**: `npm run build && npm run build:single` produces `dist/transformer-explain.html` with all CSS and JS inlined. It opens by double-click and can be shared over an intranet or by email. Append `?lang=en` to the file address for English.
+- **Open a single file**: `npm run build && npm run build:single` produces `dist/transformer-explain.html` (explanation page) and `dist/transformer-simulator.html` (simulator) with all CSS and JS inlined. It opens by double-click and can be shared over an intranet or by email. Append `?lang=en` to the file address for English.
 - **Download the build**: every push makes the CI workflow upload a `site` artifact (the build folder plus the single file). Find it under the repository's Actions tab → the run → Artifacts.
 - **Share a link**: enable GitHub Pages as described under "Deployment"; the same address with `/transformer-explain.html` appended serves the offline single file.
 

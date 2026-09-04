@@ -5,16 +5,17 @@
 
 ## 명령
 
-| 명령                | 설명                                                 |
-| ------------------- | ---------------------------------------------------- |
-| `npm run dev`       | 개발 서버 (Vite)                                     |
-| `npm run check`     | lint + format:check + typecheck + 단위 테스트 + 빌드 |
-| `npm run lint`      | oxlint                                               |
-| `npm run format`    | prettier --write                                     |
-| `npm run typecheck` | tsc -b                                               |
-| `npm test`          | vitest run                                           |
-| `npm run e2e`       | playwright (빌드 후 `vite preview` 에 대해 실행)     |
-| `npm run build`     | dist/ 생성                                           |
+| 명령                   | 설명                                                                                    |
+| ---------------------- | --------------------------------------------------------------------------------------- |
+| `npm run dev`          | 개발 서버 (Vite)                                                                        |
+| `npm run check`        | lint + format:check + typecheck + 단위 테스트 + 빌드                                    |
+| `npm run lint`         | oxlint                                                                                  |
+| `npm run format`       | prettier --write                                                                        |
+| `npm run typecheck`    | tsc -b                                                                                  |
+| `npm test`             | vitest run                                                                              |
+| `npm run e2e`          | playwright (빌드 후 `vite preview` 에 대해 실행)                                        |
+| `npm run build`        | dist/ 생성 (index.html 과 simulator.html 두 페이지)                                     |
+| `npm run build:single` | 페이지마다 HTML 파일 하나로 합침 (transformer-explain.html, transformer-simulator.html) |
 
 완료 기준: `npm run check` 와 `npm run e2e` 가 모두 통과해야 한다. CI(.github/workflows/ci.yml)도 같은 순서로 돈다.
 
@@ -36,6 +37,7 @@ src/
                 tinyTransformer.ts: 내장 소형 모델 추론). 반드시 테스트와 함께
   data/         attention/*.json: scripts/precompute_attention.py 가 만든 실제 어텐션 값 (없어도 빌드됨)
                 model/tiny-transformer.json: scripts/train_tiny_model.py 가 학습한 작은 모델 가중치 (실시간 데모용, 필수)
+  simulator/    두 번째 페이지(simulator.html). 설명 글 없이 구조도만: Simulator.tsx, MatrixCanvas.tsx(캔버스 히트맵), stages.ts, labels.ts
   styles/       global.css
 e2e/            Playwright 스모크 테스트
 scripts/        precompute_attention.py (실제 어텐션 값 사전 계산, 사용자 PC 에서 실행), examples.json,

@@ -6,6 +6,14 @@ import { defineConfig } from 'vitest/config'
 export default defineConfig({
   base: process.env.BASE_PATH ?? '/',
   plugins: [react()],
+  build: {
+    // 설명 페이지(index.html)와 시뮬레이터(simulator.html) 두 페이지를 만든다.
+    rollupOptions: {
+      input: { main: 'index.html', simulator: 'simulator.html' },
+    },
+    // 내장 모델(313 KB)이 번들에 포함되므로 청크 크기 경고 기준을 올린다.
+    chunkSizeWarningLimit: 1200,
+  },
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
