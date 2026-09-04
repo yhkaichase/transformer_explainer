@@ -35,6 +35,15 @@
   gap: 12px;
 }
 
+.sim-author {
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 .sim-controls {
   display: grid;
   grid-template-columns: minmax(240px, 1fr) minmax(320px, 1.3fr) minmax(280px, 1fr);

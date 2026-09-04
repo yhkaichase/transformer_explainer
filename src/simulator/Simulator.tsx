@@ -605,6 +605,7 @@ export function Simulator({ random = Math.random, initialLang }: SimulatorProps)
         </div>
         <p className="sim-subtitle">{L.subtitle}</p>
         <div className="sim-header-actions">
+          <span className="sim-author">{L.author}</span>
           <fieldset className="segmented">
             <legend className="visually-hidden">Language</legend>
             {(['ko', 'en'] as const).map((value) => (

@@ -32,6 +32,7 @@ describe('Simulator', () => {
     const tokens = within(screen.getByRole('list', { name: L.focus })).getAllByRole('button')
     expect(tokens).toHaveLength(model.encode('은행에 가서 돈을').length)
     expect(screen.getByText(L.prefill)).toBeInTheDocument()
+    expect(screen.getByText('제작자: 최영하')).toBeInTheDocument()
     const stageButtons = screen.getAllByRole('button', { current: 'step' })
     expect(stageButtons).toHaveLength(1)
     expect(stageButtons[0]).toHaveTextContent(L.stageNames[STAGES[0]])

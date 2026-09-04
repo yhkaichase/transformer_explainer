@@ -4,6 +4,7 @@ export type SimLang = 'ko' | 'en'
 
 export interface SimLabels {
   title: string
+  author: string
   subtitle: string
   prompt: string
   promptHint: (max: number) => string
@@ -59,6 +60,7 @@ export interface SimLabels {
 export const LABELS: Record<SimLang, SimLabels> = {
   ko: {
     title: 'Transformer Simulator',
+    author: '제작자: 최영하',
     subtitle:
       '페이지에 내장된 작은 트랜스포머가 실제로 계산합니다. 글을 바꾸고, 단계를 넘기며 가중치가 어떻게 적용되는지 보세요.',
     prompt: '프롬프트',
@@ -155,6 +157,7 @@ export const LABELS: Record<SimLang, SimLabels> = {
   },
   en: {
     title: 'Transformer Simulator',
+    author: 'Author: 최영하',
     subtitle:
       'A small transformer embedded in this page computes for real. Change the text and step through the stages to see how the weights are applied.',
     prompt: 'Prompt',
