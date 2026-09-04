@@ -261,6 +261,30 @@
   color: var(--text-muted);
 }
 
+.sim-speed,
+.sim-loop {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.sim-speed select {
+  padding: 3px 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: inherit;
+  font: inherit;
+  font-size: 0.8rem;
+}
+
+.sim-loop input {
+  accent-color: var(--accent);
+}
+
 /* ------------------------------------------------------------------ 구조도 */
 .sim-diagram {
   display: flex;

@@ -1,6 +1,6 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { loadTinyModel } from '../lib/tinyTransformer'
 import { LABELS } from './labels'
 import { Simulator } from './Simulator'
@@ -93,5 +93,51 @@ describe('Simulator', () => {
     render(<Simulator initialLang="ko" />)
     await user.click(screen.getByRole('radio', { name: 'English' }))
     expect(screen.getByText(LABELS.en.prefill)).toBeInTheDocument()
+  })
+})
+
+describe('자동 재생 배속과 이어 쓰기', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('배속을 올리면 단계가 더 빨리 넘어간다', () => {
+    render(<Simulator initialLang="ko" />)
+    fireEvent.change(screen.getByRole('combobox', { name: L.speed }), { target: { value: '4' } })
+    fireEvent.click(screen.getByRole('button', { name: L.autoplay }))
+    act(() => {
+      vi.advanceTimersByTime(1600 / 4 + 5)
+    })
+    expect(screen.getByRole('button', { current: 'step' })).toHaveTextContent(
+      L.stageNames[STAGES[1]],
+    )
+    act(() => {
+      vi.advanceTimersByTime(1600 / 4 + 5)
+    })
+    expect(screen.getByRole('button', { current: 'step' })).toHaveTextContent(
+      L.stageNames[STAGES[2]],
+    )
+  })
+
+  it('이어 쓰기 옵션을 켜면 마지막 단계 뒤에 토큰이 하나 늘고 첫 단계로 돌아간다', () => {
+    render(<Simulator initialLang="ko" random={() => 0} />)
+    const before = within(screen.getByRole('list', { name: L.focus })).getAllByRole('button').length
+    fireEvent.click(screen.getByRole('checkbox', { name: L.loopDecode }))
+    fireEvent.click(screen.getByRole('button', { name: `${STAGES.length}${L.stageNames.sample}` }))
+    fireEvent.click(screen.getByRole('button', { name: L.autoplay }))
+    act(() => {
+      vi.advanceTimersByTime(1600 + 5)
+    })
+    expect(within(screen.getByRole('list', { name: L.focus })).getAllByRole('button')).toHaveLength(
+      before + 1,
+    )
+    expect(screen.getByRole('button', { current: 'step' })).toHaveTextContent(
+      L.stageNames[STAGES[0]],
+    )
+    expect(screen.getByText(L.decode(1, before))).toBeInTheDocument()
   })
 })

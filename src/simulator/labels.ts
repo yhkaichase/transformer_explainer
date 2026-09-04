@@ -20,6 +20,8 @@ export interface SimLabels {
   focus: string
   autoplay: string
   autoplayStop: string
+  speed: string
+  loopDecode: string
   prev: string
   next: string
   stageNames: Record<StageId, string>
@@ -71,6 +73,8 @@ export const LABELS: Record<SimLang, SimLabels> = {
     focus: '초점 토큰',
     autoplay: '자동 재생',
     autoplayStop: '정지',
+    speed: '배속',
+    loopDecode: '마지막 단계 뒤 다음 토큰 이어 쓰기',
     prev: '이전 단계',
     next: '다음 단계',
     stageNames: {
@@ -163,6 +167,8 @@ export const LABELS: Record<SimLang, SimLabels> = {
     focus: 'Focus token',
     autoplay: 'Autoplay',
     autoplayStop: 'Stop',
+    speed: 'Speed',
+    loopDecode: 'Decode a token after the last stage',
     prev: 'Previous stage',
     next: 'Next stage',
     stageNames: {

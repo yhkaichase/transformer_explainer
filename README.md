@@ -23,7 +23,7 @@ npm run dev        # http://localhost:5173
 ## 시뮬레이터 (transformer-simulator.html)
 
 설명 글 없이 구조만 보고 싶을 때 쓰는 두 번째 페이지입니다. 개발 서버에서는 `http://localhost:5173/simulator.html`, 빌드 뒤에는 `dist/simulator.html`, 단일 파일은 `dist/transformer-simulator.html` 입니다.
-입력 → 임베딩 → (층) LayerNorm → W_Q·W_K·W_V → 헤드별 어텐션 → W_O → 잔차 → LayerNorm → W₁ → ReLU → W₂ → 잔차 → 최종 LayerNorm → 로짓 → softmax → 다음 토큰을 한 화면에 가로로 펼치고, 실제 가중치 행렬과 활성값을 히트맵으로 그립니다. 단계 스테퍼(← → 키)로 흐름을 따라가고, Prefill(프롬프트 전체 병렬 계산)과 Decode(새 토큰 1개, K·V 캐시 재사용)를 구분해 표시합니다.
+입력 → 임베딩 → (층) LayerNorm → W_Q·W_K·W_V → 헤드별 어텐션 → W_O → 잔차 → LayerNorm → W₁ → ReLU → W₂ → 잔차 → 최종 LayerNorm → 로짓 → softmax → 다음 토큰을 한 화면에 가로로 펼치고, 실제 가중치 행렬과 활성값을 히트맵으로 그립니다. 단계 스테퍼(← → 키, 자동 재생 0.5×~4× 배속, 마지막 단계 뒤 토큰 이어 쓰기 옵션)로 흐름을 따라가고, Prefill(프롬프트 전체 병렬 계산)과 Decode(새 토큰 1개, K·V 캐시 재사용)를 구분해 표시합니다.
 
 ## Node.js 없이 보기
 

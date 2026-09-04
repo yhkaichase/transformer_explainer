@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { sampleIndex, softmax } from '../lib/math'
 import { loadTinyModel, type TraceResult } from '../lib/tinyTransformer'
 import { LABELS, type SimLang } from './labels'
@@ -16,6 +16,7 @@ const CELL = 3
 const WIDE_CELL = 1.5
 const HEAT_CELL = 2
 const AUTOPLAY_MS = 1600
+const SPEEDS = [0.5, 1, 2, 4]
 
 function maxAbs(values: ArrayLike<number>): number {
   let max = 0
@@ -217,6 +218,8 @@ export function Simulator({ random = Math.random, initialLang }: SimulatorProps)
   const [focus, setFocus] = useState<number | null>(null)
   const [stageIndex, setStageIndex] = useState(0)
   const [autoplay, setAutoplay] = useState(false)
+  const [speed, setSpeed] = useState(1)
+  const [loopDecode, setLoopDecode] = useState(false)
 
   const promptText = prompt ?? DEFAULT_PROMPT[lang]
   const text = promptText + generated
@@ -239,11 +242,13 @@ export function Simulator({ random = Math.random, initialLang }: SimulatorProps)
   const canDecode = trace !== null && T < context
   const cacheRows = mode === 'decode' ? T - 1 : null
 
+  // 자동 재생: 배속에 따라 단계를 넘기고, 옵션이 켜져 있으면 마지막 단계 뒤에 토큰을 하나 이어 쓴다.
+  const tickRef = useRef<() => void>(() => {})
   useEffect(() => {
     if (!autoplay) return
-    const id = window.setInterval(() => setStageIndex((i) => (i + 1) % STAGES.length), AUTOPLAY_MS)
+    const id = window.setInterval(() => tickRef.current(), AUTOPLAY_MS / speed)
     return () => window.clearInterval(id)
-  }, [autoplay])
+  }, [autoplay, speed])
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -256,7 +261,7 @@ export function Simulator({ random = Math.random, initialLang }: SimulatorProps)
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
-  const decode = (steps: number) => {
+  const decode = (steps: number, keepStage = false) => {
     let current = text
     for (let step = 0; step < steps; step++) {
       const currentIds = model.encode(current)
@@ -275,8 +280,20 @@ export function Simulator({ random = Math.random, initialLang }: SimulatorProps)
     }
     setGenerated(current.slice(promptText.length))
     setFocus(null)
-    setStageIndex(STAGES.indexOf('sample'))
+    if (!keepStage) setStageIndex(STAGES.indexOf('sample'))
   }
+
+  // 렌더 중에 ref 를 쓰지 않도록 effect 안에서 최신 tick 을 등록한다.
+  useEffect(() => {
+    tickRef.current = () => {
+      if (stageIndex < STAGES.length - 1) {
+        setStageIndex(stageIndex + 1)
+        return
+      }
+      if (loopDecode && canDecode) decode(1, true)
+      setStageIndex(0)
+    }
+  })
 
   const reset = () => {
     setGenerated('')
@@ -733,6 +750,24 @@ export function Simulator({ random = Math.random, initialLang }: SimulatorProps)
           >
             {autoplay ? L.autoplayStop : L.autoplay}
           </button>
+          <label className="sim-speed">
+            <span>{L.speed}</span>
+            <select value={speed} onChange={(event) => setSpeed(Number(event.target.value))}>
+              {SPEEDS.map((value) => (
+                <option key={value} value={value}>
+                  {value}×
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="sim-loop">
+            <input
+              type="checkbox"
+              checked={loopDecode}
+              onChange={(event) => setLoopDecode(event.target.checked)}
+            />
+            <span>{L.loopDecode}</span>
+          </label>
         </div>
         <p className="sim-formula" aria-live="polite">
           <span className={`sim-group-tag group-${STAGE_GROUP[stage]}`}>

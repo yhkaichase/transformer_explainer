@@ -23,7 +23,7 @@ npm run dev        # http://localhost:5173
 ## Simulator (transformer-simulator.html)
 
 A second page for looking at the structure without explanatory text: `http://localhost:5173/simulator.html` on the dev server, `dist/simulator.html` after a build, or the single file `dist/transformer-simulator.html`.
-It lays out input → embedding → (layer) LayerNorm → W_Q·W_K·W_V → per-head attention → W_O → residual → LayerNorm → W₁ → ReLU → W₂ → residual → final LayerNorm → logits → softmax → next token horizontally on one screen, drawing the real weight matrices and activations as heatmaps. A stage stepper (← → keys) walks through the flow, and Prefill (all prompt tokens in parallel) is distinguished from Decode (one new token, cached K·V reused).
+It lays out input → embedding → (layer) LayerNorm → W_Q·W_K·W_V → per-head attention → W_O → residual → LayerNorm → W₁ → ReLU → W₂ → residual → final LayerNorm → logits → softmax → next token horizontally on one screen, drawing the real weight matrices and activations as heatmaps. A stage stepper (← → keys, autoplay at 0.5×–4× speed with an option to decode a token after the last stage) walks through the flow, and Prefill (all prompt tokens in parallel) is distinguished from Decode (one new token, cached K·V reused).
 
 ## Viewing without Node.js
 
