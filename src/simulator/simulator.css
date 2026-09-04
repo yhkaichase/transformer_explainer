@@ -41,10 +41,75 @@
 
 .sim-controls {
   display: grid;
-  grid-template-columns: minmax(260px, 1fr) 2fr;
+  grid-template-columns: minmax(240px, 1fr) minmax(320px, 1.3fr) minmax(280px, 1fr);
   gap: 16px 24px;
   padding: 14px 20px;
   border-bottom: 1px solid var(--border);
+}
+
+.sim-result {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+}
+
+.sim-result h3 {
+  margin: 0 0 4px;
+  font-size: 0.9rem;
+}
+
+.sim-result-label {
+  margin: 0 0 4px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.sim-result-text {
+  margin: 0 0 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: var(--surface);
+  font-size: 1rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.sim-gen {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.sim-caret {
+  color: var(--accent);
+  animation: sim-blink 1s steps(2, start) infinite;
+}
+
+@keyframes sim-blink {
+  to {
+    visibility: hidden;
+  }
+}
+
+.sim-result-next {
+  margin: 0 0 6px;
+  font-size: 0.9rem;
+}
+
+.sim-result-next strong {
+  padding: 0 6px;
+  border-radius: 4px;
+  background: var(--accent-soft);
+  font-size: 1.05rem;
+}
+
+.sim-result .sim-bars {
+  padding: 0;
+}
+
+.sim-result .sim-bars ol {
+  width: 100%;
 }
 
 .sim-prompt label {
@@ -674,6 +739,16 @@
   padding: 14px 20px 0;
   font-size: 0.8rem;
   color: var(--text-muted);
+}
+
+@media (max-width: 1180px) {
+  .sim-controls {
+    grid-template-columns: minmax(240px, 1fr) minmax(280px, 1fr);
+  }
+
+  .sim-result {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (max-width: 860px) {

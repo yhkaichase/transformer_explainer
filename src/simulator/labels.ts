@@ -22,6 +22,10 @@ export interface SimLabels {
   autoplayStop: string
   speed: string
   loopDecode: string
+  result: string
+  generatedText: string
+  nextToken: string
+  nextTop: string
   prev: string
   next: string
   stageNames: Record<StageId, string>
@@ -75,6 +79,10 @@ export const LABELS: Record<SimLang, SimLabels> = {
     autoplayStop: '정지',
     speed: '배속',
     loopDecode: '마지막 단계 뒤 다음 토큰 이어 쓰기',
+    result: '결과',
+    generatedText: '생성된 글 (파란 부분이 모델이 이어 쓴 것)',
+    nextToken: '다음 토큰',
+    nextTop: '다음 토큰 후보 상위 5개',
     prev: '이전 단계',
     next: '다음 단계',
     stageNames: {
@@ -169,6 +177,10 @@ export const LABELS: Record<SimLang, SimLabels> = {
     autoplayStop: 'Stop',
     speed: 'Speed',
     loopDecode: 'Decode a token after the last stage',
+    result: 'Output',
+    generatedText: 'Generated text (blue part written by the model)',
+    nextToken: 'Next token',
+    nextTop: 'Top 5 next-token candidates',
     prev: 'Previous stage',
     next: 'Next stage',
     stageNames: {

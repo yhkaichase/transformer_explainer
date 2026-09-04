@@ -163,6 +163,13 @@ test('시뮬레이터 페이지: 단계 이동, decode, 캔버스가 그려진�
 
   await page.getByRole('button', { name: 'Decode: 다음 토큰' }).click()
   await expect(page.getByText(/Decode 1 · 새 토큰 1개만 계산/)).toBeVisible()
+  // 모델이 뽑은 글자는 공백일 수 있으므로 길이로 확인한다
+  expect(
+    await page
+      .getByTestId('sim-result')
+      .locator('.sim-gen')
+      .evaluate((el) => el.textContent?.length),
+  ).toBe(1)
   await expect(page.locator('.sim-badge')).toHaveText('새 토큰')
   await page.getByRole('button', { name: '처음으로' }).click()
   await expect(page.getByText('Prefill · 프롬프트 토큰 전체를 한 번에 계산')).toBeVisible()

@@ -705,6 +705,39 @@ export function Simulator({ random = Math.random, initialLang }: SimulatorProps)
             </select>
           </div>
         </div>
+
+        <div className="sim-result" data-testid="sim-result">
+          <h3>{L.result}</h3>
+          <p className="sim-result-label">{L.generatedText}</p>
+          <p className="sim-result-text">
+            <span>{promptText}</span>
+            <span className="sim-gen">{generated}</span>
+            <span className="sim-caret" aria-hidden="true">
+              ▌
+            </span>
+          </p>
+          {trace && topIds.length > 0 && (
+            <>
+              <p className="sim-result-next">
+                {L.nextToken}: <strong>{displayChar(topIds[0].token)}</strong>{' '}
+                {(topIds[0].probability * 100).toFixed(1)}%
+              </p>
+              <Bars
+                title={L.nextTop}
+                items={topIds.slice(0, 5).map((c) => ({
+                  key: String(c.id),
+                  label: displayChar(c.token),
+                  value: c.probability,
+                  display: `${(c.probability * 100).toFixed(1)}%`,
+                }))}
+                max={1}
+                stages={['softmax', 'sample']}
+                active={stage}
+                highlightKey={pickedKey}
+              />
+            </>
+          )}
+        </div>
       </section>
 
       <section className="sim-stepper" aria-label="stages">

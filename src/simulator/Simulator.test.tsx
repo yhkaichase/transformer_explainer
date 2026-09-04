@@ -61,8 +61,31 @@ describe('Simulator', () => {
     expect(screen.getByText(L.newToken)).toBeInTheDocument()
     expect(screen.getByRole('button', { current: 'step' })).toHaveTextContent(L.stageNames.sample)
 
+    // 결과 카드: 파란 부분에 모델이 이어 쓴 글자가 바로 보인다
+    const result = screen.getByTestId('sim-result')
+    const generated = model
+      .generate('은행에 가서 돈을', 1, 1, () => 0)
+      .slice('은행에 가서 돈을'.length)
+    expect(result.querySelector('.sim-gen')?.textContent).toBe(generated)
+    expect(within(result).getByText(L.nextTop)).toBeInTheDocument()
+
     await user.click(screen.getByRole('button', { name: L.reset }))
     expect(screen.getByText(L.prefill)).toBeInTheDocument()
+  })
+
+  it('결과 카드는 처음부터 다음 토큰 후보 5개를 보여 준다', () => {
+    render(<Simulator initialLang="ko" />)
+    const result = screen.getByTestId('sim-result')
+    const top = model.nextTokenDistribution(
+      model.forward(model.encode('은행에 가서 돈을')).logits,
+      1,
+    )
+    expect(within(result).getAllByRole('listitem')).toHaveLength(5)
+    expect(
+      within(result).getByText(`${(top[0].probability * 100).toFixed(1)}%`, {
+        selector: '.sim-bar-value',
+      }),
+    ).toBeInTheDocument()
   })
 
   it('프롬프트를 바꾸면 토큰이 다시 계산되고, 빈 입력에는 안내가 나온다', async () => {
