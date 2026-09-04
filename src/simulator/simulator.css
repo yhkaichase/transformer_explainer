@@ -35,10 +35,6 @@
   gap: 12px;
 }
 
-.sim-link {
-  font-size: 0.9rem;
-}
-
 .sim-controls {
   display: grid;
   grid-template-columns: minmax(240px, 1fr) minmax(320px, 1.3fr) minmax(280px, 1fr);

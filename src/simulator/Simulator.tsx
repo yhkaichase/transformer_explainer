@@ -623,9 +623,6 @@ export function Simulator({ random = Math.random, initialLang }: SimulatorProps)
               </label>
             ))}
           </fieldset>
-          <a className="sim-link" href="./transformer-explain.html">
-            {L.fullPage}
-          </a>
         </div>
       </header>
 

@@ -52,7 +52,6 @@ export interface SimLabels {
     dModel: number,
     vocab: number,
   ) => string
-  fullPage: string
   empty: string
   contextFull: (max: number) => string
 }
@@ -151,7 +150,6 @@ export const LABELS: Record<SimLang, SimLabels> = {
     },
     modelNote: (params, layers, heads, dModel, vocab) =>
       `모델: 문자 단위 디코더 전용 트랜스포머, ${layers}층 × ${heads}헤드, d_model ${dModel}, 어휘 ${vocab}, 파라미터 ${params.toLocaleString()}개. 이 저장소의 scripts/train_tiny_model.py 가 페이지 본문으로 학습. 값은 모두 실제 계산 결과입니다.`,
-    fullPage: '설명 페이지로',
     empty: '글자를 한 개 이상 입력하세요.',
     contextFull: (max) => `문맥 길이 ${max} 에 도달했습니다.`,
   },
@@ -250,7 +248,6 @@ export const LABELS: Record<SimLang, SimLabels> = {
     },
     modelNote: (params, layers, heads, dModel, vocab) =>
       `Model: character-level decoder-only transformer, ${layers} layers × ${heads} heads, d_model ${dModel}, vocabulary ${vocab}, ${params.toLocaleString()} parameters, trained on this page's text by scripts/train_tiny_model.py. Every value shown is a real computation.`,
-    fullPage: 'Explanation page',
     empty: 'Type at least one character.',
     contextFull: (max) => `Context length ${max} reached.`,
   },
