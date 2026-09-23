@@ -73,5 +73,5 @@ docs/plan.md    콘텐츠 계획, 설계 원칙, 열린 질문
 
 - `.claude/hooks/session-start.sh`: Claude Code on the web 세션 시작 시 `npm install` (로컬에서는 건너뜀).
 - `.github/workflows/ci.yml`: 푸시/PR 마다 check + e2e.
-- `.github/workflows/deploy.yml`: main 푸시 시 GitHub Pages 배포. 저장소 Settings → Pages → Source 를 "GitHub Actions" 로 한 번 설정해야 한다. 빌드 시 `BASE_PATH=/transformer_explain/` 이 주입된다.
+- `.github/workflows/deploy.yml`: main 푸시 시 GitHub Pages 배포. 저장소 Settings → Pages → Source 를 "GitHub Actions" 로 한 번 설정해야 한다. 빌드 시 `BASE_PATH=/transformer_explainer/` 이 주입된다.
 - Playwright 는 1.56.1 로 고정. 원격 세션의 사전 설치 Chromium(빌드 1194)과 맞추기 위해서다. 올릴 때는 `npx playwright install chromium` 이 필요하다.

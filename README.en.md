@@ -91,7 +91,7 @@ Commit the generated `src/data/attention/*.json`. Details are in [scripts/README
 
 Pushing to `main` deploys to GitHub Pages through `.github/workflows/deploy.yml`.
 Set **Settings → Pages → Build and deployment → Source** to **GitHub Actions** once in the repository.
-The site is served at `https://<user>.github.io/transformer_explain/`; append `?lang=en` for the English version.
+The site is served at `https://<user>.github.io/transformer_explainer/`; append `?lang=en` for the English version.
 
 ## References
 

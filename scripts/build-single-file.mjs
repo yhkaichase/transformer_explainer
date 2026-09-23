@@ -18,7 +18,7 @@ const PAGES = [
 ]
 
 function assetPath(outDir, href) {
-  // base 경로(/ 또는 /transformer_explain/)와 무관하게 /assets/ 이후만 쓴다.
+  // base 경로(/ 또는 /transformer_explainer/)와 무관하게 /assets/ 이후만 쓴다.
   const marker = '/assets/'
   const index = href.indexOf(marker)
   if (index < 0) throw new Error(`알 수 없는 자산 경로: ${href}`)

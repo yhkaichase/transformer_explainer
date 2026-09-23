@@ -284,7 +284,7 @@ export const ko: LocalePack = {
           label: '이 페이지의 소형 구현 읽기',
           detail:
             'src/lib/math.ts 의 softmax, 스케일드 닷프로덕트 어텐션, 인과 마스크, 위치 인코딩과 테스트.',
-          url: 'https://github.com/yhkaichase/transformer_explain',
+          url: 'https://github.com/yhkaichase/transformer_explainer',
         },
         {
           label: '실제 GPT-2 내부 보기',

@@ -294,7 +294,7 @@ export const en: LocalePack = {
           label: "Read this page's small implementation",
           detail:
             'softmax, scaled dot-product attention, causal mask, and positional encoding in src/lib/math.ts, with tests.',
-          url: 'https://github.com/yhkaichase/transformer_explain',
+          url: 'https://github.com/yhkaichase/transformer_explainer',
         },
         {
           label: 'Look inside a real GPT-2',

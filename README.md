@@ -89,7 +89,7 @@ python scripts/precompute_attention.py --locale ko --model <한국어 GPT-2 계�
 
 `main` 브랜치에 푸시하면 `.github/workflows/deploy.yml` 이 GitHub Pages 로 배포합니다.
 저장소 **Settings → Pages → Build and deployment → Source** 를 **GitHub Actions** 로 한 번 설정해야 합니다.
-배포 주소는 `https://<사용자>.github.io/transformer_explain/` 형태이고, 영어 버전은 뒤에 `?lang=en` 을 붙입니다.
+배포 주소는 `https://<사용자>.github.io/transformer_explainer/` 형태이고, 영어 버전은 뒤에 `?lang=en` 을 붙입니다.
 
 ## 참고 자료
 
