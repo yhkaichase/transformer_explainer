@@ -52,9 +52,16 @@ jobs:
           retention-days: 7
 
       # Node.js 없이 페이지를 볼 수 있게 빌드 결과를 내려받을 수 있는 파일로 남긴다.
-      # Actions 실행 페이지의 Artifacts 에서 "site" 를 받아 transformer-explain.html 을 열면 된다.
+      # 같은 파일이 저장소의 standalone/ 에 커밋돼 있으므로, 소스와 어긋나면 여기서 실패한다.
       - name: Build single-file HTML
         run: npm run build:single
+
+      - name: Check that standalone/ matches the source
+        run: |
+          if ! git diff --exit-code --stat -- standalone; then
+            echo "::error::standalone/ 의 단일 파일이 소스와 다릅니다. 'npm run build:single' 을 실행해 다시 커밋하세요."
+            exit 1
+          fi
 
       - name: Upload site build (dist + single-file HTML)
         uses: actions/upload-artifact@v7

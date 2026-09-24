@@ -5,3 +5,5 @@ playwright-report
 test-results
 coverage
 src/data/model/*.json
+# 빌드가 만든 단일 파일 (한 줄이 1 MB 가 넘는다)
+standalone/

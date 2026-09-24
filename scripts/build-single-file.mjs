@@ -1,6 +1,8 @@
 // 페이지마다 HTML 파일 하나로 합친다 (CSS, JS, 파비콘을 인라인).
 // 결과: dist/transformer-explain.html (설명 페이지), dist/transformer-simulator.html (트랜스포머 시뮬레이터),
 //       dist/DCv4.1-simulator.html (DeepSeek-V4.1-Flash 시뮬레이터).
+// 같은 파일을 저장소에 추적되는 standalone/ 에도 써서, GitHub 에서 바로 내려받을 수 있게 한다.
+// (코드를 바꾸면 다시 실행해 함께 커밋한다. CI 가 최신인지 검사한다.)
 // Node.js 없이 브라우저에서 바로 열 수 있다 (더블클릭, 인트라넷, 메일 첨부).
 //
 // npm run build 는 두 페이지가 코드를 공유하는 청크를 만들므로, 여기서는 페이지마다 따로
@@ -12,6 +14,7 @@ import { build } from 'vite'
 
 const root = resolve('.')
 const dist = join(root, 'dist')
+const standalone = join(root, 'standalone')
 const cache = join(root, 'node_modules', '.cache', 'single-file')
 const PAGES = [
   { source: 'index.html', output: 'transformer-explain.html' },
@@ -79,9 +82,13 @@ function inlinePage(outDir, source, output) {
 
   if (inlined < 2) throw new Error(`${source}: CSS 또는 JS 를 인라인하지 못했습니다.`)
   mkdirSync(dist, { recursive: true })
+  mkdirSync(standalone, { recursive: true })
   const target = join(dist, output)
   writeFileSync(target, html)
-  console.log(`생성: dist/${output} (${Math.round(statSync(target).size / 1024)} KB)`)
+  writeFileSync(join(standalone, output), html)
+  console.log(
+    `생성: dist/${output}, standalone/${output} (${Math.round(statSync(target).size / 1024)} KB)`,
+  )
 }
 
 for (const page of PAGES) {

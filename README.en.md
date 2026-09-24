@@ -34,7 +34,8 @@ It shows CED (a causal encoder of 5 layers plus a 5-layer decoder whose global K
 
 The page is a static site: a browser is all you need to view it. Node.js is required only to build it.
 
-- **Open a single file**: `npm run build && npm run build:single` produces `dist/transformer-explain.html` (explanation page), `dist/transformer-simulator.html` (transformer simulator), and `dist/DCv4.1-simulator.html` (DeepSeek-V4.1-Flash simulator) with all CSS and JS inlined. It opens by double-click and can be shared over an intranet or by email. Append `?lang=en` to the file address for English.
+- **Download from GitHub**: the repository's [`standalone/`](standalone/) folder holds the three finished single files: `transformer-explain.html` (explanation page), `transformer-simulator.html` (transformer simulator), and `DCv4.1-simulator.html` (DeepSeek-V4.1-Flash simulator). Open a file on GitHub and use the "Download raw file" button; it opens by double-click. All CSS, JS, and model weights are inlined, so it can be shared over an intranet or by email. Append `?lang=en` to the file address for English.
+- **Build them yourself**: `npm run build && npm run build:single` writes the same files to `dist/` and `standalone/`. After changing code, run it again and commit `standalone/` with the change (CI checks that it matches the source).
 - **Download the build**: every push makes the CI workflow upload a `site` artifact (the build folder plus the single file). Find it under the repository's Actions tab → the run → Artifacts.
 - **Share a link**: enable GitHub Pages as described under "Deployment"; the same address with `/transformer-explain.html` appended serves the offline single file.
 
