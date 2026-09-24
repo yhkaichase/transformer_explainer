@@ -41,6 +41,27 @@
 - 초점 토큰: 토큰이나 띠의 행을 누르면 그 위치의 계산을 아래 카드에서 수식 그대로 보여 준다 (h · W_Q + b_Q = q, 점수 표, ReLU 로 0 이 된 자리 등).
 - 빌드: `npm run build` 가 두 페이지를 만들고 `npm run build:single` 이 `transformer-simulator.html` 도 만든다.
 
+## DeepSeek-V4.1-Flash 시뮬레이터 페이지 (4차 피드백 반영)
+
+사용자가 저장소에 넣은 `DeepseekV4.1_manual.docx`(2026-09-21, "DeepSeek-V4.1-Flash의 KV cache가 토큰당 890 B인 이유")를 근거로,
+트랜스포머 시뮬레이터와 같은 방식(내장 축소 모델이 실제로 계산, 단계 스테퍼, 초점 토큰 수식, prefill/decode)으로 V4.1-Flash 의 동작을 보여 주는
+세 번째 페이지 `DCv4.1-simulator.html` 을 만들었다.
+
+- 매뉴얼에서 가져온 구조: CED(encoder 20 + decoder 20, decoder KV 는 L19 출력에서 투영, prefill 에서 decoder 는 마지막 128토큰만),
+  CSA2 세 모드(Full L2·L8·L14·L20, Reindex L24·L28·L32·L36, 나머지 Reuse, L0·L1 SWA 전용), 64 헤드가 512차원 latent 하나를 key·value 로 공유,
+  indexer K 128차원과 Top-512, 후보 풀 2,048블록 × 8, SWA 128, main KV 288 B(FP4 + E4M3 scale) · indexer K 68 B(MXFP4),
+  890 B = (288 + 68) × (3 × ½ + 1), MoE shared 1 + routed 6/384, decode 1스텝 읽기량(1M: indexer K 174 MB, main KV 5.6 MB, SWA 3.0 MB).
+- 축소판(`scripts/train_tiny_dsv41.py`): 10층(encoder 5 + decoder 5), 헤드 4 × latent 16, 인덱서 2 × 8, Top-4, 윈도우 8, 후보 풀 2 × 4,
+  MoE 1 + 2/8, FP4 scale 그룹 8채널. 모드 배치는 L0 swa, L1·L3 full(m=2), L2·L4 reuse, L5 full(m=1, CED), L6·L8 reuse, L7·L9 reindex.
+  학습은 dense 워밍업 → 희소 Top-K → FP4 QAT 순서이고, 인덱서는 V3.2 방식대로 main attention 분포에 KL 로 정렬한다.
+- 브라우저 구현(`src/lib/tinyDsv41.ts`)은 학습 코드와 같은 순서로 계산하고, 양자화 규칙까지 글자 그대로 같다. 기준값 테스트가 Top-K·후보 풀·전문가 선택의 일치까지 확인한다.
+- 화면: 층 배치 패널(모드 색, KV 생성 층, CED 화살표) → 선택한 층의 다섯 줄(Query·SWA / global KV / 인덱서·Top-K / 두 분기 어텐션 / MoE) → 출력 → KV cache 카드.
+  Reuse·Reindex 층에서 물려받는 값은 점선으로, 없는 단계는 취소선으로 표시한다. prefill 에서 decoder 를 지나지 않는 토큰에는 "enc만" 표시가 붙는다.
+- 밝힌 단순화: 크기, 문자 토큰과 절대 위치 임베딩(RoPE 대신), 매뉴얼이 가정한 인덱서 점수 함수와 SWA 의 query 공유, MoE 라우터 세부(sigmoid + 편향),
+  DSpark·persistent KV 미구현. 실제 모델 수치는 모두 매뉴얼에서 가져왔고, 매뉴얼이 2차 자료라고 밝힌 값(헤드 64, latent 512 등)은 그 성격 그대로 적었다.
+- 열린 질문: 매뉴얼이 확인하지 못했다고 한 부분(SWA 분기의 별도 투영 여부, 인덱서 헤드 수, d_model)은 실제 리포트(arXiv 2609.19969)로 확인되면 반영한다.
+  이 세션에서는 arXiv·Hugging Face 접속이 막혀 있어 매뉴얼 이외의 출처로 교차 검증하지 못했다.
+
 ## 설계 원칙
 
 1. **비유 먼저, 수식은 선택.** 모든 섹션은 "비유로 이해하기" 콜아웃으로 시작한다. 수식은 엔지니어용에서만.

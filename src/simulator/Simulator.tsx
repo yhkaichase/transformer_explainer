@@ -1,9 +1,11 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { sampleIndex, softmax } from '../lib/math'
 import { loadTinyModel, type TraceResult } from '../lib/tinyTransformer'
 import { LABELS, type SimLang } from './labels'
 import { MatrixCanvas } from './MatrixCanvas'
-import { formatFormula, STAGE_GROUP, STAGES, type StageId } from './stages'
+import { CELL, displayChar, fmt, maxAbs, ROW, WIDE_CELL } from './format'
+import { Bars, Heat, Op, Strip, type StripProps } from './parts'
+import { formatFormula, STAGE_GROUP, STAGES } from './stages'
 
 const DEFAULT_PROMPT: Record<SimLang, string> = {
   ko: '은행에 가서 돈을',
@@ -11,191 +13,8 @@ const DEFAULT_PROMPT: Record<SimLang, string> = {
 }
 const PROMPT_MAX = 40
 const TOP_K = 10
-const ROW = 14
-const CELL = 3
-const WIDE_CELL = 1.5
-const HEAT_CELL = 2
 const AUTOPLAY_MS = 1600
 const SPEEDS = [0.5, 1, 2, 4]
-
-function maxAbs(values: ArrayLike<number>): number {
-  let max = 0
-  for (let i = 0; i < values.length; i++) max = Math.max(max, Math.abs(values[i]))
-  return max || 1
-}
-
-function displayChar(char: string): string {
-  if (char === ' ') return '␣'
-  if (char === '\n') return '⏎'
-  return char
-}
-
-const fmt = (value: number) => value.toFixed(2)
-
-interface StripProps {
-  title: string
-  data: Float32Array
-  rows: number
-  cols: number
-  cell?: number
-  highlightRow?: number | null
-  dimRowsBefore?: number | null
-  separatorEvery?: number
-  markZeros?: boolean
-  stages: StageId[]
-  active: StageId
-  onSelectRow?: (row: number) => void
-  scale?: number
-}
-
-/** 활성값 행렬(T × 열)을 띠 모양 히트맵으로 그린다. */
-function Strip({
-  title,
-  data,
-  rows,
-  cols,
-  cell = CELL,
-  highlightRow = null,
-  dimRowsBefore = null,
-  separatorEvery,
-  markZeros,
-  stages,
-  active,
-  onSelectRow,
-  scale,
-}: StripProps) {
-  const isActive = stages.includes(active)
-  return (
-    <figure
-      className={`sim-el sim-strip${isActive ? ' is-active' : ''}`}
-      data-stage={stages.join(' ')}
-    >
-      <figcaption>{title}</figcaption>
-      <MatrixCanvas
-        rows={rows}
-        cols={cols}
-        value={(r, c) => data[r * cols + c]}
-        scale={scale ?? maxAbs(data)}
-        mode="diverging"
-        cellWidth={cell}
-        cellHeight={ROW}
-        highlightRow={highlightRow}
-        dimRowsBefore={dimRowsBefore}
-        separatorEvery={separatorEvery}
-        markZeros={markZeros}
-        label={`${title} ${rows}×${cols}`}
-        tooltip={(r, c, v) => `${title}[${r}, ${c}] = ${v.toFixed(3)}`}
-        onSelectRow={onSelectRow}
-      />
-    </figure>
-  )
-}
-
-interface HeatProps {
-  title: string
-  data: Float32Array
-  rows: number
-  cols: number
-  cell?: number
-  stages: StageId[]
-  active: StageId
-  highlightRow?: number | null
-}
-
-/** 가중치 행렬 히트맵. */
-function Heat({
-  title,
-  data,
-  rows,
-  cols,
-  cell = HEAT_CELL,
-  stages,
-  active,
-  highlightRow = null,
-}: HeatProps) {
-  const isActive = stages.includes(active)
-  return (
-    <figure
-      className={`sim-el sim-heat${isActive ? ' is-active' : ''}`}
-      data-stage={stages.join(' ')}
-    >
-      <figcaption>
-        {title}{' '}
-        <span className="sim-shape">
-          {rows}×{cols}
-        </span>
-      </figcaption>
-      <MatrixCanvas
-        rows={rows}
-        cols={cols}
-        value={(r, c) => data[r * cols + c]}
-        scale={maxAbs(data)}
-        mode="diverging"
-        cellWidth={cell}
-        cellHeight={cell}
-        highlightRow={highlightRow}
-        label={`${title} ${rows}×${cols}`}
-        tooltip={(r, c, v) => `${title}[${r}, ${c}] = ${v.toFixed(4)}`}
-      />
-    </figure>
-  )
-}
-
-function Op({ children }: { children: ReactNode }) {
-  return (
-    <span className="sim-op" aria-hidden="true">
-      {children}
-    </span>
-  )
-}
-
-interface BarItem {
-  key: string
-  label: string
-  value: number
-  display: string
-}
-
-function Bars({
-  title,
-  items,
-  max,
-  stages,
-  active,
-  highlightKey,
-}: {
-  title: string
-  items: BarItem[]
-  max: number
-  stages: StageId[]
-  active: StageId
-  highlightKey?: string
-}) {
-  const isActive = stages.includes(active)
-  return (
-    <figure
-      className={`sim-el sim-bars${isActive ? ' is-active' : ''}`}
-      data-stage={stages.join(' ')}
-    >
-      <figcaption>{title}</figcaption>
-      <ol>
-        {items.map((item) => (
-          <li key={item.key} className={item.key === highlightKey ? 'is-picked' : undefined}>
-            <span className="sim-bar-label">{item.label}</span>
-            <span className="sim-bar-track" aria-hidden="true">
-              <span
-                className="sim-bar-fill"
-                style={{ width: `${(Math.max(0, item.value) / max) * 100}%` }}
-              />
-            </span>
-            <span className="sim-bar-value">{item.display}</span>
-          </li>
-        ))}
-      </ol>
-    </figure>
-  )
-}
-
 interface SimulatorProps {
   /** 뽑기에 쓰는 난수. 테스트에서 고정한다. */
   random?: () => number

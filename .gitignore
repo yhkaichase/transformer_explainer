@@ -27,3 +27,6 @@ dist-ssr
 playwright-report
 test-results
 coverage
+
+# Python
+__pycache__/

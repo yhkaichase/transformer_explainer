@@ -5,17 +5,17 @@
 
 ## 명령
 
-| 명령                   | 설명                                                                                    |
-| ---------------------- | --------------------------------------------------------------------------------------- |
-| `npm run dev`          | 개발 서버 (Vite)                                                                        |
-| `npm run check`        | lint + format:check + typecheck + 단위 테스트 + 빌드                                    |
-| `npm run lint`         | oxlint                                                                                  |
-| `npm run format`       | prettier --write                                                                        |
-| `npm run typecheck`    | tsc -b                                                                                  |
-| `npm test`             | vitest run                                                                              |
-| `npm run e2e`          | playwright (빌드 후 `vite preview` 에 대해 실행)                                        |
-| `npm run build`        | dist/ 생성 (index.html 과 simulator.html 두 페이지)                                     |
-| `npm run build:single` | 페이지마다 HTML 파일 하나로 합침 (transformer-explain.html, transformer-simulator.html) |
+| 명령                   | 설명                                                                                                           |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `npm run dev`          | 개발 서버 (Vite)                                                                                               |
+| `npm run check`        | lint + format:check + typecheck + 단위 테스트 + 빌드                                                           |
+| `npm run lint`         | oxlint                                                                                                         |
+| `npm run format`       | prettier --write                                                                                               |
+| `npm run typecheck`    | tsc -b                                                                                                         |
+| `npm test`             | vitest run                                                                                                     |
+| `npm run e2e`          | playwright (빌드 후 `vite preview` 에 대해 실행)                                                               |
+| `npm run build`        | dist/ 생성 (index.html, simulator.html, DCv4.1-simulator.html 세 페이지)                                       |
+| `npm run build:single` | 페이지마다 HTML 파일 하나로 합침 (transformer-explain.html, transformer-simulator.html, DCv4.1-simulator.html) |
 
 완료 기준: `npm run check` 와 `npm run e2e` 가 모두 통과해야 한다. CI(.github/workflows/ci.yml)도 같은 순서로 돈다.
 
@@ -34,14 +34,20 @@ src/
   components/   화면 조각. SectionView 가 섹션 하나를 그린다. 인터랙티브 데모는 *Demo.tsx
   state/        설명 수준(임원용/엔지니어용)과 언어(한국어/English) 컨텍스트
   lib/          순수 계산 함수 (math.ts: softmax/어텐션, tokenize.ts, attentionData.ts: 실제 값 파일 검사,
-                tinyTransformer.ts: 내장 소형 모델 추론). 반드시 테스트와 함께
+                tensor.ts: fp16 텐서 디코딩과 행렬 도우미, tinyTransformer.ts: 내장 소형 트랜스포머 추론,
+                tinyDsv41.ts: DeepSeek-V4.1 축소 모델 추론과 FP4/MXFP4 저장 규칙). 반드시 테스트와 함께
   data/         attention/*.json: scripts/precompute_attention.py 가 만든 실제 어텐션 값 (없어도 빌드됨)
                 model/tiny-transformer.json: scripts/train_tiny_model.py 가 학습한 작은 모델 가중치 (실시간 데모용, 필수)
-  simulator/    두 번째 페이지(simulator.html). 설명 글 없이 구조도만: Simulator.tsx, MatrixCanvas.tsx(캔버스 히트맵), stages.ts, labels.ts
+                model/tiny-dsv41.json: scripts/train_tiny_dsv41.py 가 학습한 DeepSeek-V4.1 축소 모델 (DCv4.1 시뮬레이터용, 필수)
+  simulator/    두 번째 페이지(simulator.html). 설명 글 없이 구조도만: Simulator.tsx, MatrixCanvas.tsx(캔버스 히트맵), stages.ts, labels.ts,
+                parts.tsx/format.ts(두 시뮬레이터가 함께 쓰는 띠·히트맵·막대 부품)
+  dsv41/        세 번째 페이지(DCv4.1-simulator.html). DeepSeek-V4.1-Flash 구조 시뮬레이터: Dsv41Simulator.tsx, stages.ts, labels.ts
   styles/       global.css
 e2e/            Playwright 스모크 테스트
 scripts/        precompute_attention.py (실제 어텐션 값 사전 계산, 사용자 PC 에서 실행), examples.json,
-                train_tiny_model.py (페이지 본문으로 소형 모델 학습, JAX), build-single-file.mjs (단일 HTML)
+                train_tiny_model.py (페이지 본문으로 소형 모델 학습, JAX), train_tiny_dsv41.py (DeepSeek-V4.1 축소 모델 학습, JAX),
+                build-single-file.mjs (단일 HTML)
+DeepseekV4.1_manual.docx  사용자가 넣은 DeepSeek-V4.1-Flash 매뉴얼. DCv4.1 시뮬레이터의 구조·수치 출처이자 학습 말뭉치의 일부
 docs/plan.md    콘텐츠 계획, 설계 원칙, 열린 질문
 ```
 
@@ -65,6 +71,7 @@ docs/plan.md    콘텐츠 계획, 설계 원칙, 열린 질문
 - 새 인터랙티브 데모를 추가할 때: `content/types.ts` 의 `InteractiveKind` 에 이름을 추가하고, `SectionView.tsx` 의 `INTERACTIVES` 에 컴포넌트를 등록한 뒤, `content/structure.ts` 의 해당 섹션 `interactives` 배열에 넣는다. 데모 안의 문구는 `UiStrings` 에 넣어 두 언어로 제공한다.
 - 실제 모델 값(`src/data/attention/*.json`)은 `scripts/precompute_attention.py` 의 출력만 쓴다. 손으로 만들거나 고치지 않는다. 파일이 없으면 데모가 안내 상태를 보여 주므로 빌드는 데이터 없이도 통과해야 한다.
 - 내장 소형 모델(`src/data/model/tiny-transformer.json`)은 `scripts/train_tiny_model.py` 의 출력만 쓴다. 모델 구조를 바꾸면 학습 스크립트와 `src/lib/tinyTransformer.ts` 를 함께 바꾸고, 파일의 `reference` 값과 일치하는지 테스트(`tinyTransformer.test.ts`)로 확인한다. 본문 텍스트가 크게 바뀌면 다시 학습한다.
+- DeepSeek-V4.1 축소 모델(`src/data/model/tiny-dsv41.json`)은 `scripts/train_tiny_dsv41.py` 의 출력만 쓴다. 구조(층 모드 배치, 차원, 양자화 규칙)를 바꾸면 학습 스크립트와 `src/lib/tinyDsv41.ts` 를 같은 순서로 함께 바꾸고 `tinyDsv41.test.ts` 로 `reference` 값과 대조한다. 실제 모델 수치(층 수, 헤드, Top-K, 바이트 등)는 `DeepseekV4.1_manual.docx` 에 있는 것만 쓰고, 매뉴얼이 가정이라고 밝힌 부분은 화면의 "실제 모델과 다른 점"에 그대로 적는다.
 - 본문 문단은 임원용에서 "자세히 읽기"로 접혀 있고 엔지니어용에서 펼쳐진다. 한 줄 요약과 비유, 데모는 항상 보인다. 글은 짧게, 데모가 먼저다.
 - 새 섹션을 추가할 때: `content/types.ts` 의 `SectionId` 에 id 를 추가하고, `structure.ts` 의 순서에 넣은 뒤, `ko.ts` 와 `en.ts` 에 본문을 쓴다. 한쪽이 빠지면 컴파일되지 않는다.
 - 커밋 메시지는 한국어 또는 영어 자유. 무엇을 왜 바꿨는지 첫 줄에 적는다.
