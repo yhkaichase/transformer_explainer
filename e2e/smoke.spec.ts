@@ -174,3 +174,36 @@ test('시뮬레이터 페이지: 단계 이동, decode, 캔버스가 그려진�
   await page.getByRole('button', { name: '처음으로' }).click()
   await expect(page.getByText('Prefill · 프롬프트 토큰 전체를 한 번에 계산')).toBeVisible()
 })
+
+test('DeepSeek-V4.1 시뮬레이터 페이지: 층 배치, 단계 이동, decode, KV cache 카드', async ({
+  page,
+}) => {
+  await page.goto('/DCv4.1-simulator.html')
+  await expect(page).toHaveTitle(/DeepSeek-V4.1-Flash Simulator/)
+  await expect(page.locator('p.sim-mode')).toContainText('Prefill')
+  const diagram = page.getByTestId('sim-diagram')
+  await expect(diagram.locator('canvas').first()).toBeVisible()
+  expect(await diagram.locator('canvas').count()).toBeGreaterThan(25)
+
+  const map = page.getByRole('region', { name: '층 배치 (CSA2 모드)' })
+  await map.getByRole('button', { name: 'L5 · Full' }).click()
+  await page.getByRole('button', { name: /후보 풀/ }).click()
+  await expect(page.locator('.sim-formula code')).toContainText('P_t')
+  await page.keyboard.press('ArrowRight')
+  await expect(page.locator('button[aria-current="step"]')).toContainText('Top-K')
+
+  await map.getByRole('button', { name: 'L2 · Reuse' }).click()
+  await expect(page.locator('.sim-formula .sim-state-tag')).toContainText('L1')
+
+  await page.getByRole('button', { name: 'Decode: 다음 토큰' }).click()
+  await expect(page.locator('p.sim-mode')).toContainText('Decode 1')
+  expect(
+    await page
+      .getByTestId('sim-result')
+      .locator('.sim-gen')
+      .evaluate((el) => el.textContent?.length),
+  ).toBe(1)
+  await expect(page.getByTestId('sim-cache')).toContainText('890 B/token')
+  await page.getByRole('button', { name: '처음으로' }).click()
+  await expect(page.locator('p.sim-mode')).toContainText('Prefill')
+})

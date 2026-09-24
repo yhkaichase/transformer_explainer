@@ -1,0 +1,309 @@
+/* DCv4.1 시뮬레이터 전용 스타일. 공통 구조도 스타일은 simulator/simulator.css 를 쓴다. */
+:root {
+  --mode-full: #0f5e56;
+  --mode-reindex: #4dab9a;
+  --mode-reuse: #d8ece8;
+  --mode-swa: #e6e6e2;
+  --mode-on-dark: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --mode-full: #1f8f83;
+    --mode-reindex: #3f9c8c;
+    --mode-reuse: #244a45;
+    --mode-swa: #3a3a38;
+  }
+}
+
+:root[data-theme='dark'] {
+  --mode-full: #1f8f83;
+  --mode-reindex: #3f9c8c;
+  --mode-reuse: #244a45;
+  --mode-swa: #3a3a38;
+}
+
+/* 층 배치 패널 */
+.sim-layer-map {
+  max-width: 420px;
+}
+
+.sim-lm-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sim-lm-row + .sim-lm-row {
+  margin-top: 4px;
+}
+
+.sim-lm-label {
+  flex: none;
+  width: 92px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.sim-lm-chips {
+  display: flex;
+  gap: 4px;
+}
+
+.sim-lm-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  min-width: 46px;
+  padding: 4px 5px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font: inherit;
+  font-size: 0.72rem;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.sim-lm-chip.is-active {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.sim-lm-num {
+  font-weight: 700;
+}
+
+.sim-lm-mode {
+  font-size: 0.6rem;
+  opacity: 0.85;
+}
+
+.sim-lm-kv {
+  padding: 0 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  color: #0f5e56;
+  font-size: 0.58rem;
+  font-weight: 700;
+}
+
+.sim-lm-chip.mode-full,
+.sim-lm-chip.mode-reindex,
+.sim-legend-swatch.mode-full,
+.sim-legend-swatch.mode-reindex,
+.sim-focus-stage.mode-full,
+.sim-focus-stage.mode-reindex {
+  color: var(--mode-on-dark);
+}
+
+.mode-full.sim-lm-chip,
+.mode-full.sim-legend-swatch,
+.mode-full.sim-focus-stage {
+  background: var(--mode-full);
+}
+
+.mode-reindex.sim-lm-chip,
+.mode-reindex.sim-legend-swatch,
+.mode-reindex.sim-focus-stage {
+  background: var(--mode-reindex);
+}
+
+.mode-reuse.sim-lm-chip,
+.mode-reuse.sim-legend-swatch,
+.mode-reuse.sim-focus-stage {
+  background: var(--mode-reuse);
+  color: var(--text);
+}
+
+.mode-swa.sim-lm-chip,
+.mode-swa.sim-legend-swatch,
+.mode-swa.sim-focus-stage {
+  background: var(--mode-swa);
+  color: var(--text);
+}
+
+.sim-block.mode-full {
+  border-top: 4px solid var(--mode-full);
+}
+
+.sim-block.mode-reindex {
+  border-top: 4px solid var(--mode-reindex);
+}
+
+.sim-block.mode-reuse {
+  border-top: 4px solid var(--mode-reuse);
+}
+
+.sim-block.mode-swa {
+  border-top: 4px solid var(--mode-swa);
+}
+
+.sim-lm-arrow {
+  margin: 4px 0 4px 100px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.sim-legend {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.sim-legend li {
+  margin-bottom: 2px;
+  padding-left: 18px;
+  text-indent: -18px;
+}
+
+.sim-legend strong {
+  margin-right: 4px;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.sim-legend-swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 4px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  vertical-align: -1px;
+}
+
+.sim-lm-note {
+  margin: 8px 0 0;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* 물려받은 값, 없는 단계 */
+.sim-el.is-inherited {
+  outline: 1.5px dashed var(--text-muted);
+  outline-offset: 1px;
+}
+
+.sim-inherit-tag,
+.sim-state-tag {
+  margin-left: 8px;
+  padding: 1px 8px;
+  border: 1px dashed var(--text-muted);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  font-weight: 400;
+}
+
+.sim-state-tag.is-none {
+  border-style: solid;
+}
+
+.sim-stages li.is-inherit button {
+  border-style: dashed;
+}
+
+.sim-stages li.is-none button {
+  opacity: 0.45;
+  text-decoration: line-through;
+}
+
+.sim-state-note {
+  margin: 0;
+  padding: 6px 10px;
+  border-left: 3px dashed var(--text-muted);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.sim-block-note {
+  font-weight: 400;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.sim-badge-enc {
+  background: var(--text-muted);
+}
+
+.sim-tokens li.is-enc button {
+  opacity: 0.75;
+}
+
+/* 단계 그룹 색 (query·kv·select·moe 는 이 페이지에만 있다) */
+.group-query button,
+.sim-group-tag.group-query {
+  border-left-color: #2a78d6;
+}
+
+.group-kv button,
+.sim-group-tag.group-kv {
+  border-left-color: #0f5e56;
+}
+
+.group-select button,
+.sim-group-tag.group-select {
+  border-left-color: #b9770e;
+}
+
+.group-moe button,
+.sim-group-tag.group-moe {
+  border-left-color: #1baf7a;
+}
+
+/* KV cache 카드 */
+.sim-cache {
+  max-width: 340px;
+  font-size: 0.82rem;
+}
+
+.sim-cache ul {
+  margin: 0 0 8px;
+  padding-left: 18px;
+}
+
+.sim-cache-total,
+.sim-cache-reads {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.sim-cache-reads {
+  margin-top: 8px;
+}
+
+.sim-cache-total code {
+  display: inline-block;
+  margin: 2px 0;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: var(--bg);
+  font-size: 0.78rem;
+}
+
+.sim-cache-real {
+  color: var(--text-muted);
+  font-size: 0.76rem;
+}
+
+.sim-simplifications {
+  margin: 8px 0;
+}
+
+.sim-simplifications summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.sim-simplifications ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
+.sim-footer p {
+  margin: 0 0 6px;
+}

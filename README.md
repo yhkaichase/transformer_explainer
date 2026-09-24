@@ -25,11 +25,16 @@ npm run dev        # http://localhost:5173
 설명 글 없이 구조만 보고 싶을 때 쓰는 두 번째 페이지입니다. 개발 서버에서는 `http://localhost:5173/simulator.html`, 빌드 뒤에는 `dist/simulator.html`, 단일 파일은 `dist/transformer-simulator.html` 입니다.
 입력 → 임베딩 → (층) LayerNorm → W_Q·W_K·W_V → 헤드별 어텐션 → W_O → 잔차 → LayerNorm → W₁ → ReLU → W₂ → 잔차 → 최종 LayerNorm → 로짓 → softmax → 다음 토큰을 한 화면에 가로로 펼치고, 실제 가중치 행렬과 활성값을 히트맵으로 그립니다. 상단 오른쪽 결과 카드에 생성된 글과 다음 토큰 후보 확률이 바로 갱신되고, 단계 스테퍼(← → 키, 자동 재생 0.5×~4× 배속, 마지막 단계 뒤 토큰 이어 쓰기 옵션)로 흐름을 따라가고, Prefill(프롬프트 전체 병렬 계산)과 Decode(새 토큰 1개, K·V 캐시 재사용)를 구분해 표시합니다.
 
+## DeepSeek-V4.1-Flash 시뮬레이터 (DCv4.1-simulator.html)
+
+저장소의 `DeepseekV4.1_manual.docx`(2026-09-21)가 설명하는 DeepSeek-V4.1-Flash 의 어텐션·KV cache 구조를 아주 작게 축소한 모델이 페이지 안에서 실제로 계산하는 세 번째 페이지입니다. 개발 서버에서는 `http://localhost:5173/DCv4.1-simulator.html`, 빌드 뒤에는 `dist/DCv4.1-simulator.html`, 단일 파일도 같은 이름입니다.
+보여 주는 것: CED(causal encoder 5층 + decoder 5층, decoder 의 global KV 는 encoder 마지막 출력에서 투영, prefill 에서 decoder 는 마지막 윈도우 토큰만 처리), 층마다 고정된 CSA2 모드(SWA 전용 / Full / Reuse / Reindex), latent 하나가 key 와 value 를 겸하는 global KV 엔트리(encoder 는 인접 2토큰당 1개), FP4(E2M1) + E4M3 scale 저장과 MXFP4 indexer K, 인덱서 점수 → 후보 풀(블록 최대) → Top-K, global 로짓과 SWA 로짓의 병합 softmax, MoE(shared 1 + routed 2/8), 그리고 KV cache 카드(토큰당 바이트 유도식과 실제 890 B/token 비교, 마지막 토큰이 읽은 엔트리 수)입니다. 층 배치 패널에서 층을 고르면 그 층이 새로 계산하는 것과 물려받는 것이 구분되어 표시됩니다. 실제 모델과 다른 점(크기, 문자 토큰, 매뉴얼이 가정한 부분)은 페이지 하단 "실제 모델과 다른 점"에 적혀 있습니다.
+
 ## Node.js 없이 보기
 
 페이지는 정적 파일이라 보는 데는 브라우저만 있으면 됩니다. Node.js 는 빌드할 때만 필요합니다.
 
-- **파일 하나로 열기**: `npm run build && npm run build:single` 을 실행하면 `dist/transformer-explain.html`(설명 페이지)과 `dist/transformer-simulator.html`(시뮬레이터)이 생깁니다. CSS 와 JS 가 모두 들어 있어 더블클릭으로 열리고, 인트라넷이나 메일로 전달할 수 있습니다. 영어는 파일 주소 뒤에 `?lang=en` 을 붙입니다.
+- **파일 하나로 열기**: `npm run build && npm run build:single` 을 실행하면 `dist/transformer-explain.html`(설명 페이지), `dist/transformer-simulator.html`(트랜스포머 시뮬레이터), `dist/DCv4.1-simulator.html`(DeepSeek-V4.1-Flash 시뮬레이터)이 생깁니다. CSS 와 JS 가 모두 들어 있어 더블클릭으로 열리고, 인트라넷이나 메일로 전달할 수 있습니다. 영어는 파일 주소 뒤에 `?lang=en` 을 붙입니다.
 - **빌드 결과 내려받기**: 푸시할 때마다 GitHub Actions 의 CI 가 `site` 아티팩트(빌드 폴더 전체와 위 단일 파일)를 남깁니다. 저장소 Actions 탭 → 해당 실행 → Artifacts 에서 받을 수 있습니다.
 - **링크로 공유하기**: 아래 "배포" 대로 GitHub Pages 를 켜면 주소 하나로 공유할 수 있고, 같은 주소 뒤에 `/transformer-explain.html` 을 붙이면 오프라인용 단일 파일을 받을 수 있습니다.
 
@@ -57,7 +62,9 @@ npx playwright install chromium
 ```
 src/content/     본문 데이터. ko.ts / en.ts 에 언어별 본문·참고 자료·UI 문자열
 src/components/  화면 조각과 인터랙티브 데모
-src/lib/         softmax, 어텐션 등 순수 계산 함수 (테스트 포함)
+src/lib/         softmax, 어텐션 등 순수 계산 함수와 내장 모델 추론 (tinyTransformer.ts, tinyDsv41.ts, 테스트 포함)
+src/simulator/   트랜스포머 시뮬레이터 페이지와 두 시뮬레이터가 함께 쓰는 캔버스 히트맵·표시 부품
+src/dsv41/       DeepSeek-V4.1-Flash 시뮬레이터 페이지
 src/state/       설명 수준(임원용/엔지니어용) 상태
 e2e/             Playwright 스모크 테스트
 docs/plan.md     콘텐츠 계획과 열린 질문
@@ -71,6 +78,13 @@ docs/plan.md     콘텐츠 계획과 열린 질문
 pip install -r scripts/requirements-train.txt
 python scripts/train_tiny_model.py
 npm test   # TypeScript 구현이 새 가중치의 기준값과 일치하는지 확인
+```
+
+DeepSeek-V4.1-Flash 시뮬레이터의 모델은 `scripts/train_tiny_dsv41.py` 가 같은 본문에 `DeepseekV4.1_manual.docx` 의 텍스트를 더해 학습합니다 (CPU 로 40분 안팎, 결과는 `src/data/model/tiny-dsv41.json`). 학습 후반에 Top-K 희소 선택과 FP4 QAT 를 켭니다.
+
+```bash
+python scripts/train_tiny_dsv41.py
+npm test   # tinyDsv41.test.ts 가 기준값과 대조
 ```
 
 ## 실제 어텐션 값 만들기

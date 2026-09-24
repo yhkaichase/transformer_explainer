@@ -7,12 +7,16 @@ export default defineConfig({
   base: process.env.BASE_PATH ?? '/',
   plugins: [react()],
   build: {
-    // 설명 페이지(index.html)와 시뮬레이터(simulator.html) 두 페이지를 만든다.
+    // 설명 페이지(index.html), 트랜스포머 시뮬레이터(simulator.html), DeepSeek-V4.1 시뮬레이터 세 페이지를 만든다.
     rollupOptions: {
-      input: { main: 'index.html', simulator: 'simulator.html' },
+      input: {
+        main: 'index.html',
+        simulator: 'simulator.html',
+        dsv41: 'DCv4.1-simulator.html',
+      },
     },
-    // 내장 모델(313 KB)이 번들에 포함되므로 청크 크기 경고 기준을 올린다.
-    chunkSizeWarningLimit: 1200,
+    // 내장 모델(313 KB, 1.1 MB)이 번들에 포함되므로 청크 크기 경고 기준을 올린다.
+    chunkSizeWarningLimit: 2400,
   },
   test: {
     environment: 'jsdom',
