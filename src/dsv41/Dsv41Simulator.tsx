@@ -9,6 +9,7 @@ import {
   type EntryTrace,
 } from '../lib/tinyDsv41'
 import { CELL, displayChar, fmt, maxAbs, ROW, WIDE_CELL } from '../simulator/format'
+import { HScroll } from '../simulator/HScroll'
 import { MatrixCanvas } from '../simulator/MatrixCanvas'
 import { Bars, Heat, Op, Strip, type StripProps } from '../simulator/parts'
 import { LABELS, REAL_MODEL, type SimLang } from './labels'
@@ -177,6 +178,7 @@ export function Dsv41Simulator({ random = Math.random, initialLang }: SimulatorP
   }
 
   const tickRef = useRef<() => void>(() => {})
+  const diagramRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     if (!autoplay) return
     const id = window.setInterval(() => tickRef.current(), AUTOPLAY_MS / speed)
@@ -1058,96 +1060,99 @@ export function Dsv41Simulator({ random = Math.random, initialLang }: SimulatorP
         </div>
       </section>
 
-      <section className="sim-stepper" aria-label="stages">
-        <div className="sim-stepper-row">
-          <button
-            type="button"
-            onClick={() => setStageIndex((i) => Math.max(0, i - 1))}
-            disabled={stageIndex === 0}
-            aria-label={L.prev}
-          >
-            ◀
-          </button>
-          <ol className="sim-stages">
-            {STAGES.map((id, i) => {
-              const st = state(id)
-              return (
-                <li
-                  key={id}
-                  className={`group-${STAGE_GROUP[id]}${i === stageIndex ? ' is-active' : ''}${st !== 'compute' ? ` is-${st}` : ''}`}
-                >
-                  <button
-                    type="button"
-                    onClick={() => setStageIndex(i)}
-                    aria-current={i === stageIndex ? 'step' : undefined}
+      <div className="sim-sticky">
+        <section className="sim-stepper" aria-label="stages">
+          <div className="sim-stepper-row">
+            <button
+              type="button"
+              onClick={() => setStageIndex((i) => Math.max(0, i - 1))}
+              disabled={stageIndex === 0}
+              aria-label={L.prev}
+            >
+              ◀
+            </button>
+            <ol className="sim-stages">
+              {STAGES.map((id, i) => {
+                const st = state(id)
+                return (
+                  <li
+                    key={id}
+                    className={`group-${STAGE_GROUP[id]}${i === stageIndex ? ' is-active' : ''}${st !== 'compute' ? ` is-${st}` : ''}`}
                   >
-                    <span className="sim-stage-num">{i + 1}</span>
-                    {L.stageNames[id]}
-                  </button>
-                </li>
-              )
-            })}
-          </ol>
-          <button
-            type="button"
-            onClick={() => setStageIndex((i) => Math.min(STAGES.length - 1, i + 1))}
-            disabled={stageIndex === STAGES.length - 1}
-            aria-label={L.next}
-          >
-            ▶
-          </button>
-          <button
-            type="button"
-            className={autoplay ? 'is-on' : undefined}
-            onClick={() => setAutoplay((a) => !a)}
-            aria-pressed={autoplay}
-          >
-            {autoplay ? L.autoplayStop : L.autoplay}
-          </button>
-          <label className="sim-speed">
-            <span>{L.speed}</span>
-            <select value={speed} onChange={(event) => setSpeed(Number(event.target.value))}>
-              {SPEEDS.map((value) => (
-                <option key={value} value={value}>
-                  {value}×
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="sim-loop">
-            <input
-              type="checkbox"
-              checked={loopDecode}
-              onChange={(event) => setLoopDecode(event.target.checked)}
-            />
-            <span>{L.loopDecode}</span>
-          </label>
-        </div>
-        <p className="sim-formula" aria-live="polite">
-          <span className={`sim-group-tag group-${STAGE_GROUP[stage]}`}>
-            {L.groups[STAGE_GROUP[stage]]}
-          </span>
-          <strong>{L.stageNames[stage]}</strong>
-          <code>{formatFormula(stage, shapeValues)}</code>
-          {stateOf !== 'compute' && (
-            <span className={`sim-state-tag is-${stateOf}`}>
-              {stateOf === 'inherit'
-                ? L.inherited(
-                    stage === 'pool'
-                      ? decoderFullLayer
-                      : (layerTrace?.selectedFrom ?? spec.src ?? 0),
-                  )
-                : L.stateNote.none}
+                    <button
+                      type="button"
+                      onClick={() => setStageIndex(i)}
+                      aria-current={i === stageIndex ? 'step' : undefined}
+                    >
+                      <span className="sim-stage-num">{i + 1}</span>
+                      {L.stageNames[id]}
+                    </button>
+                  </li>
+                )
+              })}
+            </ol>
+            <button
+              type="button"
+              onClick={() => setStageIndex((i) => Math.min(STAGES.length - 1, i + 1))}
+              disabled={stageIndex === STAGES.length - 1}
+              aria-label={L.next}
+            >
+              ▶
+            </button>
+            <button
+              type="button"
+              className={autoplay ? 'is-on' : undefined}
+              onClick={() => setAutoplay((a) => !a)}
+              aria-pressed={autoplay}
+            >
+              {autoplay ? L.autoplayStop : L.autoplay}
+            </button>
+            <label className="sim-speed">
+              <span>{L.speed}</span>
+              <select value={speed} onChange={(event) => setSpeed(Number(event.target.value))}>
+                {SPEEDS.map((value) => (
+                  <option key={value} value={value}>
+                    {value}×
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="sim-loop">
+              <input
+                type="checkbox"
+                checked={loopDecode}
+                onChange={(event) => setLoopDecode(event.target.checked)}
+              />
+              <span>{L.loopDecode}</span>
+            </label>
+          </div>
+          <p className="sim-formula" aria-live="polite">
+            <span className={`sim-group-tag group-${STAGE_GROUP[stage]}`}>
+              {L.groups[STAGE_GROUP[stage]]}
             </span>
-          )}
-        </p>
-      </section>
+            <strong>{L.stageNames[stage]}</strong>
+            <code>{formatFormula(stage, shapeValues)}</code>
+            {stateOf !== 'compute' && (
+              <span className={`sim-state-tag is-${stateOf}`}>
+                {stateOf === 'inherit'
+                  ? L.inherited(
+                      stage === 'pool'
+                        ? decoderFullLayer
+                        : (layerTrace?.selectedFrom ?? spec.src ?? 0),
+                    )
+                  : L.stateNote.none}
+              </span>
+            )}
+          </p>
+        </section>
+        <HScroll target={diagramRef} label={L.hscroll} />
+      </div>
 
       {!trace || !layerTrace ? (
         <p className="sim-empty">{L.empty}</p>
       ) : (
         <>
-          <div className="sim-diagram" data-testid="sim-diagram">
+          <div className="sim-diagram" data-testid="sim-diagram" ref={diagramRef}>
             <section
               className={`sim-panel sim-panel-input sim-el${stage === 'tokens' ? ' is-active' : ''}`}
             >

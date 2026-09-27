@@ -185,6 +185,14 @@ test('DeepSeek-V4.1 시뮬레이터 페이지: 층 배치, 단계 이동, decode
   await expect(diagram.locator('canvas').first()).toBeVisible()
   expect(await diagram.locator('canvas').count()).toBeGreaterThan(25)
 
+  // 구조도 위의 가로 스크롤바가 구조도를 움직인다
+  const hscroll = page.locator('.sim-hscroll')
+  await expect(hscroll).toBeVisible()
+  await hscroll.evaluate((el) => {
+    el.scrollLeft = 400
+  })
+  await expect.poll(() => diagram.evaluate((el) => el.scrollLeft)).toBeGreaterThan(300)
+
   const map = page.getByRole('region', { name: '층 배치 (CSA2 모드)' })
   await map.getByRole('button', { name: 'L5 · Full' }).click()
   await page.getByRole('button', { name: /후보 풀/ }).click()

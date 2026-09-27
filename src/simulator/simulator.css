@@ -197,13 +197,31 @@
 }
 
 /* ------------------------------------------------------------------ 단계 스테퍼 */
+.sim-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--surface);
+}
+
 .sim-stepper {
   padding: 10px 20px;
   border-bottom: 1px solid var(--border);
   background: var(--surface);
-  position: sticky;
-  top: 0;
-  z-index: 5;
+}
+
+/* 구조도 위 가로 스크롤바 (HScroll): 구조도(.sim-diagram)의 가로 스크롤과 맞춘다 */
+.sim-hscroll {
+  height: 16px;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  scrollbar-color: var(--text-muted) var(--bg);
+}
+
+.sim-hscroll > div {
+  height: 1px;
 }
 
 .sim-stepper-row {

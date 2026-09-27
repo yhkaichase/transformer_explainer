@@ -133,6 +133,46 @@ describe('Dsv41Simulator', () => {
   })
 })
 
+describe('구조도 위 가로 스크롤바', () => {
+  it('구조도보다 넓을 때 나타나고 구조도와 양방향으로 맞춰진다', () => {
+    const original = {
+      scrollWidth: Object.getOwnPropertyDescriptor(Element.prototype, 'scrollWidth'),
+      clientWidth: Object.getOwnPropertyDescriptor(Element.prototype, 'clientWidth'),
+    }
+    Object.defineProperty(Element.prototype, 'scrollWidth', { configurable: true, get: () => 3000 })
+    Object.defineProperty(Element.prototype, 'clientWidth', { configurable: true, get: () => 1000 })
+    try {
+      render(<Dsv41Simulator initialLang="ko" />)
+      const bar = document.querySelector('.sim-hscroll') as HTMLDivElement
+      expect(bar).not.toBeNull()
+      expect(bar.title).toBe(L.hscroll)
+      const diagram = screen.getByTestId('sim-diagram')
+      // jsdom 은 scrollLeft 를 저장하지 않으므로 두 요소에 값을 기억하는 속성을 둔다
+      for (const el of [bar, diagram]) {
+        let left = 0
+        Object.defineProperty(el, 'scrollLeft', {
+          configurable: true,
+          get: () => left,
+          set: (value: number) => {
+            left = value
+          },
+        })
+      }
+      bar.scrollLeft = 300
+      fireEvent.scroll(bar)
+      expect(diagram.scrollLeft).toBe(300)
+      diagram.scrollLeft = 120
+      fireEvent.scroll(diagram)
+      expect(bar.scrollLeft).toBe(120)
+    } finally {
+      if (original.scrollWidth)
+        Object.defineProperty(Element.prototype, 'scrollWidth', original.scrollWidth)
+      if (original.clientWidth)
+        Object.defineProperty(Element.prototype, 'clientWidth', original.clientWidth)
+    }
+  })
+})
+
 describe('자동 재생', () => {
   beforeEach(() => {
     vi.useFakeTimers()

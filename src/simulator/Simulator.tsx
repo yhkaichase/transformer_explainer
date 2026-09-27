@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { sampleIndex, softmax } from '../lib/math'
 import { loadTinyModel, type TraceResult } from '../lib/tinyTransformer'
 import { LABELS, type SimLang } from './labels'
+import { HScroll } from './HScroll'
 import { MatrixCanvas } from './MatrixCanvas'
 import { CELL, displayChar, fmt, maxAbs, ROW, WIDE_CELL } from './format'
 import { Bars, Heat, Op, Strip, type StripProps } from './parts'
@@ -63,6 +64,7 @@ export function Simulator({ random = Math.random, initialLang }: SimulatorProps)
 
   // 자동 재생: 배속에 따라 단계를 넘기고, 옵션이 켜져 있으면 마지막 단계 뒤에 토큰을 하나 이어 쓴다.
   const tickRef = useRef<() => void>(() => {})
+  const diagramRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     if (!autoplay) return
     const id = window.setInterval(() => tickRef.current(), AUTOPLAY_MS / speed)
@@ -557,82 +559,85 @@ export function Simulator({ random = Math.random, initialLang }: SimulatorProps)
         </div>
       </section>
 
-      <section className="sim-stepper" aria-label="stages">
-        <div className="sim-stepper-row">
-          <button
-            type="button"
-            onClick={() => setStageIndex((i) => Math.max(0, i - 1))}
-            disabled={stageIndex === 0}
-            aria-label={L.prev}
-          >
-            ◀
-          </button>
-          <ol className="sim-stages">
-            {STAGES.map((id, i) => (
-              <li
-                key={id}
-                className={`group-${STAGE_GROUP[id]}${i === stageIndex ? ' is-active' : ''}`}
-              >
-                <button
-                  type="button"
-                  onClick={() => setStageIndex(i)}
-                  aria-current={i === stageIndex ? 'step' : undefined}
+      <div className="sim-sticky">
+        <section className="sim-stepper" aria-label="stages">
+          <div className="sim-stepper-row">
+            <button
+              type="button"
+              onClick={() => setStageIndex((i) => Math.max(0, i - 1))}
+              disabled={stageIndex === 0}
+              aria-label={L.prev}
+            >
+              ◀
+            </button>
+            <ol className="sim-stages">
+              {STAGES.map((id, i) => (
+                <li
+                  key={id}
+                  className={`group-${STAGE_GROUP[id]}${i === stageIndex ? ' is-active' : ''}`}
                 >
-                  <span className="sim-stage-num">{i + 1}</span>
-                  {L.stageNames[id]}
-                </button>
-              </li>
-            ))}
-          </ol>
-          <button
-            type="button"
-            onClick={() => setStageIndex((i) => Math.min(STAGES.length - 1, i + 1))}
-            disabled={stageIndex === STAGES.length - 1}
-            aria-label={L.next}
-          >
-            ▶
-          </button>
-          <button
-            type="button"
-            className={autoplay ? 'is-on' : undefined}
-            onClick={() => setAutoplay((a) => !a)}
-            aria-pressed={autoplay}
-          >
-            {autoplay ? L.autoplayStop : L.autoplay}
-          </button>
-          <label className="sim-speed">
-            <span>{L.speed}</span>
-            <select value={speed} onChange={(event) => setSpeed(Number(event.target.value))}>
-              {SPEEDS.map((value) => (
-                <option key={value} value={value}>
-                  {value}×
-                </option>
+                  <button
+                    type="button"
+                    onClick={() => setStageIndex(i)}
+                    aria-current={i === stageIndex ? 'step' : undefined}
+                  >
+                    <span className="sim-stage-num">{i + 1}</span>
+                    {L.stageNames[id]}
+                  </button>
+                </li>
               ))}
-            </select>
-          </label>
-          <label className="sim-loop">
-            <input
-              type="checkbox"
-              checked={loopDecode}
-              onChange={(event) => setLoopDecode(event.target.checked)}
-            />
-            <span>{L.loopDecode}</span>
-          </label>
-        </div>
-        <p className="sim-formula" aria-live="polite">
-          <span className={`sim-group-tag group-${STAGE_GROUP[stage]}`}>
-            {L.groups[STAGE_GROUP[stage]]}
-          </span>
-          <strong>{L.stageNames[stage]}</strong>
-          <code>{formatFormula(stage, shapeValues)}</code>
-        </p>
-      </section>
+            </ol>
+            <button
+              type="button"
+              onClick={() => setStageIndex((i) => Math.min(STAGES.length - 1, i + 1))}
+              disabled={stageIndex === STAGES.length - 1}
+              aria-label={L.next}
+            >
+              ▶
+            </button>
+            <button
+              type="button"
+              className={autoplay ? 'is-on' : undefined}
+              onClick={() => setAutoplay((a) => !a)}
+              aria-pressed={autoplay}
+            >
+              {autoplay ? L.autoplayStop : L.autoplay}
+            </button>
+            <label className="sim-speed">
+              <span>{L.speed}</span>
+              <select value={speed} onChange={(event) => setSpeed(Number(event.target.value))}>
+                {SPEEDS.map((value) => (
+                  <option key={value} value={value}>
+                    {value}×
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="sim-loop">
+              <input
+                type="checkbox"
+                checked={loopDecode}
+                onChange={(event) => setLoopDecode(event.target.checked)}
+              />
+              <span>{L.loopDecode}</span>
+            </label>
+          </div>
+          <p className="sim-formula" aria-live="polite">
+            <span className={`sim-group-tag group-${STAGE_GROUP[stage]}`}>
+              {L.groups[STAGE_GROUP[stage]]}
+            </span>
+            <strong>{L.stageNames[stage]}</strong>
+            <code>{formatFormula(stage, shapeValues)}</code>
+          </p>
+        </section>
+        <HScroll target={diagramRef} label={L.hscroll} />
+      </div>
 
       {!trace || !layerTrace || !attention ? (
         <p className="sim-empty">{L.empty}</p>
       ) : (
         <>
-          <div className="sim-diagram" data-testid="sim-diagram">
+          <div className="sim-diagram" data-testid="sim-diagram" ref={diagramRef}>
             <section
               className={`sim-panel sim-panel-input sim-el${stage === 'tokens' ? ' is-active' : ''}`}
             >

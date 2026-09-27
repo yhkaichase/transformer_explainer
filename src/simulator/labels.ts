@@ -29,6 +29,7 @@ export interface SimLabels {
   nextTop: string
   prev: string
   next: string
+  hscroll: string
   stageNames: Record<StageId, string>
   groups: { input: string; embed: string; attention: string; ffn: string; output: string }
   panels: {
@@ -86,6 +87,7 @@ export const LABELS: Record<SimLang, SimLabels> = {
     nextTop: '다음 토큰 후보 상위 5개',
     prev: '이전 단계',
     next: '다음 단계',
+    hscroll: '구조도 가로 스크롤',
     stageNames: {
       tokens: '토큰화',
       embed: '임베딩 + 위치',
@@ -184,6 +186,7 @@ export const LABELS: Record<SimLang, SimLabels> = {
     nextTop: 'Top 5 next-token candidates',
     prev: 'Previous stage',
     next: 'Next stage',
+    hscroll: 'Scroll the diagram sideways',
     stageNames: {
       tokens: 'Tokenize',
       embed: 'Embedding + position',
